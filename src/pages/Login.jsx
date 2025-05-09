@@ -61,7 +61,7 @@ function Login() {
             type="submit"
             style={{
               padding: "12px",
-              width: "100%",
+              width: "106%",
               backgroundColor: "#2563eb",
               color: "#fff",
               border: "none",
