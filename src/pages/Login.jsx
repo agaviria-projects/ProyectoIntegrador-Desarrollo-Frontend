@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.png"; // usa el nombre correcto de tu logo
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -18,15 +18,11 @@ function Login() {
   return (
     <div style={{
       minHeight: "100vh",
-      height: "100vh",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: "#f1f5f9",
       fontFamily: "Arial, sans-serif",
-      margin: "0",
-      padding: "0",  
-
     }}>
       <div style={{
         width: "100%",
@@ -75,7 +71,7 @@ function Login() {
         </form>
       </div>
     </div>
-  ); 
+  );
 }
 
 export default Login;

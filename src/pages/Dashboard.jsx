@@ -1,60 +1,88 @@
+// Archivo: Dashboard.jsx
+import { FaUserGraduate, FaChalkboardTeacher, FaClipboardList, FaChartLine, FaUserTie } from "react-icons/fa";
+
 function Dashboard() {
   const username = localStorage.getItem("userName");
 
-  const cardStyle = {
-    backgroundColor: "#ffffff",
-    padding: "20px",
-    borderRadius: "12px",
-    textAlign: "center",
-    width: "160px",
-    fontWeight: "bold",
-    textDecoration: "none",
-    color: "#2563eb",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-    transition: "all 0.3s ease",
-    cursor: "pointer",
-  };
+  const resumen = [
+    { icon: <FaUserGraduate />, label: "Estudiantes", value: 120 },
+    { icon: <FaChalkboardTeacher />, label: "Cursos", value: 8 },
+    { icon: <FaClipboardList />, label: "Matrículas", value: 23 },
+    { icon: <FaUserTie />, label: "Profesores", value: 7 },
+    { icon: <FaChartLine />, label: "Notas", value: 5 }
+  ];
 
- return (
-  <div style={{
-    height: "100vh",
-    backgroundColor: "#f1f5f9",
-    fontFamily: "Arial, sans-serif",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "40px 20px"
-  }}>
-    <div>
-      <h1 style={{ color: "#1e293b", marginBottom: "5px", textAlign: "center" }}>
-        ¡Bienvenido, {username}!
-      </h1>
-      <p style={{ color: "#475569", marginBottom: "30px", textAlign: "center" }}>
-        Selecciona un módulo para continuar con la gestión académica.
-      </p>
+  return (
+    <div style={{
+      background: "linear-gradient(to bottom right, #e2e8f0, #f8fafc)",
+      minHeight: "100vh",
+      paddingTop: "110px",
+      fontFamily: "'Poppins', sans-serif"
+    }}>
+      <div style={{ textAlign: "center", maxWidth: "900px", margin: "0 auto" }}>
+        <h1 style={{ fontSize: "34px", color: "#0f172a", marginBottom: "8px" }}>
+          ¡Bienvenido, {username}!
+        </h1>
+        <p style={{ fontSize: "18px", color: "#475569", lineHeight: "1.6" }}>
+          Accede, visualiza y mejora tu gestión académica con <strong>EduSystem</strong>. Más que una plataforma, una experiencia digital moderna.
+        </p>
+      </div>
+
       <div style={{
         display: "flex",
-        gap: "20px",
         justifyContent: "center",
         flexWrap: "wrap",
-        marginTop: "170px"
+        gap: "32px",
+        marginTop: "60px"
       }}>
-        <a href="/estudiantes" style={cardStyle}>📚 Estudiantes</a>
-        <a href="#" style={cardStyle}>📘 Cursos</a>
-        <a href="#" style={cardStyle}>👨‍🏫 Profesores</a>
-        <a href="#" style={cardStyle}>📝 Matrículas</a>
+        {resumen.map((item, i) => (
+          <div key={i} style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "18px",
+            padding: "30px 20px",
+            width: "220px",
+            textAlign: "center",
+            boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+            transition: "all 0.3s ease-in-out",
+            transform: "scale(1)",
+            cursor: "pointer"
+          }}
+            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+          >
+            <div style={{ fontSize: "42px", color: "#2563eb", marginBottom: "12px" }}>
+              {item.icon}
+            </div>
+            <h3 style={{ fontSize: "18px", color: "#0f172a", marginBottom: "6px" }}>{item.label}</h3>
+            <p style={{ fontSize: "24px", fontWeight: "bold", color: "#1e293b" }}>{item.value}</p>
+          </div>
+        ))}
       </div>
-    </div>
 
-    <p style={{
-      fontSize: "14px",
-      color: "#94a3b8",
-      marginBottom:"70px"
-    }}>
-      EducationSystem - Sistema de Gestión Académica © CESDE 2025
-    </p>
-  </div>
-);
+      <div style={{
+        marginTop: "60px",
+        textAlign: "center",
+        animation: "fadeInUp 1.5s ease-in-out"
+      }}>
+        <p style={{ fontSize: "16px", color: "#475569" }}>
+          Estás viendo tu resumen académico en tiempo real. ¡Sigue construyendo tu futuro!
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
+  );
 }
+
 export default Dashboard;
