@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import './Dashboard.css';
 import {
   FaUserGraduate,
   FaBook,
@@ -64,37 +65,22 @@ function Dashboard() {
   ];
 
   return (
-    <div style={{ display: "flex" }}>
-      <div style={{
-        width: "300px",
-        height: "100vh",
-        backgroundColor: "#0b1f2a",
-        color: "white",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "10px 0 30px 0",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        fontSize: "16px"
-      }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-          <img src={logo} alt="Logo" style={{ width: "130px" }} />
-          <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>EducationSystem</h2>
-          <nav style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px", marginTop: "20px" }}>
-            <SidebarLink to="/estudiantes" text="Estudiantes" />
-            <SidebarLink to="/cursos" text="Cursos" />
-            <SidebarLink to="/matriculas" text="Matrículas" />
-            <SidebarLink to="/profesores" text="Profesores" />
-            <SidebarLink to="/notas" text="Notas" />
-            <SidebarLink to="/analitica" text="Análisis de datos" />
-            <SidebarLink to="/logout" text="Cerrar sesión" />
-          </nav>
-        </div>
+    <div className="dashboard-container">
+      <div className="sidebar">
+        <img src={logo} alt="Logo" />
+        <h2>EducationSystem</h2>
+        <nav>
+          <SidebarLink to="/estudiantes" text="Estudiantes" />
+          <SidebarLink to="/cursos" text="Cursos" />
+          <SidebarLink to="/matriculas" text="Matrículas" />
+          <SidebarLink to="/profesores" text="Profesores" />
+          <SidebarLink to="/notas" text="Notas" />
+          <SidebarLink to="/analitica" text="Análisis de datos" />
+          <SidebarLink to="/logout" text="Cerrar sesión" />
+        </nav>
       </div>
 
-      <div style={{ marginLeft: "300px", padding: "40px", width: "100%", position: "relative", minHeight: "100vh" }}>
+      <div className="main-content">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <motion.h2 initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} style={{ fontSize: "26px" }}>
             ¡Bienvenido, Héctor Alejandro Gaviria!
@@ -111,9 +97,9 @@ function Dashboard() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "30px", marginTop: "10px" }}>
+        <div className="cards">
           {cards.map((card, idx) => (
-            <motion.div key={idx} whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} transition={{ type: "spring", stiffness: 300 }} style={{ backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 2px 6px rgba(0,0,0,0.08)", padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "120px", cursor: "pointer" }}>
+            <motion.div key={idx} whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }} transition={{ type: "spring", stiffness: 300 }} className="card">
               <motion.div whileHover={{ rotate: 10 }} style={{ fontSize: "26px", color: card.color }}>{card.icon}</motion.div>
               <h3 style={{ fontSize: "15px", margin: "8px 0 4px" }}>{card.label}</h3>
               <p style={{ fontSize: "18px", fontWeight: "bold" }}>{card.value}</p>
@@ -122,7 +108,7 @@ function Dashboard() {
         </div>
 
         <h3 style={{ textAlign: "center", margin: "40px 0 20px", fontSize: "18px", color: "#1e293b" }}>Accesos rápidos</h3>
-        <div style={{ display: "flex", justifyContent: "center", gap: "24px", flexWrap: "wrap" }}>
+        <div className="quick-actions">
           {quickActions.map((action, idx) => (
             <motion.div key={idx} whileHover={{ scale: 1.07 }} transition={{ type: "spring", stiffness: 300 }} style={{ background: "#ffffff", borderRadius: "12px", padding: "18px", minWidth: "150px", textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.08)", cursor: "pointer" }}>
               <div>{action.icon}</div>
@@ -131,41 +117,40 @@ function Dashboard() {
           ))}
         </div>
 
-        <div style={{ textAlign: "center", marginTop: "60px", color: "#1e293b", fontSize: "18px" ,fontWeight: "600",lineHeight: "1.8"}}>
+        <div style={{ textAlign: "center", marginTop: "60px", color: "#1e293b", fontSize: "18px", fontWeight: "600", lineHeight: "1.8" }}>
           <p><strong>Educamos hoy, Transformamos el mañana</strong></p>
           <p>Education System, CESDE 2025</p>
           <p>Héctor Alejandro Gaviria Marín</p>
         </div>
 
-       <motion.div
-            whileHover={{ scale: 1.1, x: -10 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            style={{
-              position: "fixed",
-              bottom: "20px",
-              right: "20px",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#075e54",
-              borderRadius: "9999px",
-              padding: "8px 16px",
-              color: "white",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-              cursor: "pointer"
-            }}
+        <motion.div
+          whileHover={{ scale: 1.1, x: -10 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#075e54",
+            borderRadius: "9999px",
+            padding: "8px 16px",
+            color: "white",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            cursor: "pointer"
+          }}
+        >
+          <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
+          <a
+            href="https://wa.me/573001234567"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
           >
-            <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
-            <a
-              href="https://wa.me/573001234567"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
-            >
-              Hablemos por Whatsapp
-            </a>
-      </motion.div>
-
+            Hablemos por Whatsapp
+          </a>
+        </motion.div>
 
         {mostrarPerfil && (
           <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2000 }}>
@@ -187,7 +172,7 @@ function Dashboard() {
 
 function SidebarLink({ to, text }) {
   return (
-    <a href={to} style={{ display: "block", padding: "14px 22px", color: "white", textDecoration: "none", fontSize: "15px", borderBottom: "1px solid #0a1a28" }}>{text}</a>
+    <a href={to} className="sidebar-link">{text}</a>
   );
 }
 
