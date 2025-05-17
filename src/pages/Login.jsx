@@ -1,17 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png"; // usa el nombre correcto de tu logo
+import logo from "../assets/logo.png";
 
 function Login() {
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (username.trim()) {
+
+    const response = await fetch("http://localhost:8080/api/usuarios/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombreUsuario: username, contrasena: password }),
+    });
+
+    if (response.ok) {
+      const user = await response.json();
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userName", username);
+      localStorage.setItem("userName", user.nombreUsuario);
+      localStorage.setItem("rol", user.rol);
       navigate("/dashboard");
+    } else {
+      alert("Usuario o contraseña incorrectos");
     }
   };
 
@@ -21,8 +33,7 @@ function Login() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#f1f5f9",
-      fontFamily: "Arial, sans-serif",
+      backgroundColor: "#f1f5f9"
     }}>
       <div style={{
         width: "100%",
@@ -44,14 +55,15 @@ function Login() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            style={{
-              padding: "12px",
-              width: "100%",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              marginBottom: "20px",
-              fontSize: "16px"
-            }}
+            style={{ padding: "12px", width: "100%", marginBottom: "10px" }}
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{ padding: "12px", width: "100%", marginBottom: "20px" }}
           />
           <button
             type="submit"
