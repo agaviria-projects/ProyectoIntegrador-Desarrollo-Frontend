@@ -82,7 +82,11 @@ function Dashboard() {
 
         <p style={{ marginTop: "50px", color: "#334155", textAlign: "center", fontSize: "15px" }}>
           Educamos hoy, transformamos el mañana.<br />
+          <br></br>
           <strong>Education System - Plataforma académica CESDE</strong>
+          <br></br>
+          <br></br>
+          <strong>Héctor Alejandro Gaviria Marin</strong>
         </p>
       </div>
     </div>
