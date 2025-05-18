@@ -76,14 +76,16 @@ function Dashboard() {
           <SidebarLink to="/profesores" text="Profesores" />
           <SidebarLink to="/notas" text="Notas" />
           <SidebarLink to="/analitica" text="Análisis de datos" />
-          <SidebarLink to="/logout" text="Cerrar sesión" />
+        <a onClick={cerrarSesion} className="sidebar-link" style={{ cursor: "pointer" }}>
+             Cerrar sesión
+        </a>
         </nav>
       </div>
 
       <div className="main-content">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <motion.h2 initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} style={{ fontSize: "26px" }}>
-            ¡Bienvenido, Héctor Alejandro Gaviria!
+            ¡Bienvenido, {username.replace('.', ' ')}!
           </motion.h2>
           <div style={{ position: "relative" }}>
             <motion.img src={foto} alt="perfil" whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }} style={{ width: "80px", height: "80px", borderRadius: "50%", cursor: "pointer" }} onClick={() => setMenuAbierto(!menuAbierto)} />
