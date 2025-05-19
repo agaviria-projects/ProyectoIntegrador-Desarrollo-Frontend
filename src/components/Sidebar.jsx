@@ -7,9 +7,11 @@ import {
   FaChartPie,
   FaSignOutAlt
 } from "react-icons/fa";
-import logo from "../assets/logo.png"; // Asegúrate de tener el logo en esta ruta
+import logo from "../assets/logo.png"; 
 
 function Sidebar() {
+  const rol = localStorage.getItem("rol");
+  console.log("ROL EN LOCALSTORAGE:", rol);
   return (
     <div
       style={{
@@ -27,9 +29,11 @@ function Sidebar() {
       }}
     >
       <img src={logo} alt="Logo" style={{ width: "150px", marginBottom: "10px" }} />
-      <h2 style={{ fontSize: "18px", marginBottom: "30px" }}>EducationSystem</h2>
-
+      <h2 style={{ marginTop: "10px", marginBottom: "20px" ,fontSize: "18px", marginBottom: "30px" }}>EducationSystem</h2>
       <nav style={{ width: "100%" }}>
+          {rol?.toUpperCase() === "ADMIN" && (
+            <SidebarLink to="/usuarios" icon={<FaUserGraduate />} text="Gestión de Usuarios" />
+          )}
         <SidebarLink to="/estudiantes" icon={<FaUserGraduate />} text="Estudiantes" />
         <SidebarLink to="/cursos" icon={<FaBook />} text="Cursos" />
         <SidebarLink to="/matriculas" icon={<FaClipboardList />} text="Matrículas" />
