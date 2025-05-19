@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import './Dashboard.css';
+
 import {
   FaUserGraduate,
   FaBook,
@@ -63,6 +64,17 @@ function Dashboard() {
     { icon: <FaFilePdf size={22} color="#dc2626" />, label: "Generar PDF" },
     { icon: <FaFileExcel size={22} color="#16a34a" />, label: "Exportar a Excel" }
   ];
+  const [fechaActual, setFechaActual] = useState("");
+
+  useEffect(() => {
+    const hoy = new Date().toLocaleDateString("es-CO", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -86,6 +98,8 @@ function Dashboard() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <motion.h2 initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} style={{ fontSize: "26px" }}>
             ¡Bienvenido, {username.replace('.', ' ')}!
+            <h4 style={{ marginTop: "10px", color: "#475569" }}>🎯 Tu gestión hace la diferencia.</h4>
+            <p style={{ color: "#64748b", fontSize: "14px" }}>{fechaActual}</p>
           </motion.h2>
           <div style={{ position: "relative" }}>
             <motion.img src={foto} alt="perfil" whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }} style={{ width: "80px", height: "80px", borderRadius: "50%", cursor: "pointer" }} onClick={() => setMenuAbierto(!menuAbierto)} />
@@ -119,11 +133,11 @@ function Dashboard() {
           ))}
         </div>
 
-        <div style={{ textAlign: "center", marginTop: "60px", color: "#1e293b", fontSize: "18px", fontWeight: "600", lineHeight: "1.8" }}>
-          <p><strong>Educamos hoy, Transformamos el mañana</strong></p>
-          <p>Education System, CESDE 2025</p>
-          <p>Héctor Alejandro Gaviria Marín</p>
-        </div>
+        <footer className="footer-institucional">
+            <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
+            <p>Versión 1.0.0</p>
+        </footer>
+
 
         <motion.div
           whileHover={{ scale: 1.1, x: -10 }}
