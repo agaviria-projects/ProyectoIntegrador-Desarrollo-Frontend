@@ -1,0 +1,104 @@
+/* src/pages/usuarios.css */
+
+.contenedor-usuarios {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+}
+
+.titulo-usuarios {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 30px;
+  color: #1e293b;
+}
+
+.formulario-usuario {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.formulario-usuario input,
+.formulario-usuario select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 23%;
+}
+
+.boton-guardar {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.barra-busqueda {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.barra-busqueda input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.icono-busqueda {
+  margin-right: 8px;
+  color: #1e293b;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.tabla-estudiantes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla-estudiantes thead {
+  background-color: #0f172a;
+  color: white;
+}
+
+.tabla-estudiantes th,
+.tabla-estudiantes td {
+  padding: 12px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.btn-regresar {
+  margin: 30px auto 10px auto;
+  display: block;
+  padding: 10px 16px;
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 13px;
+  color: #777;
+}

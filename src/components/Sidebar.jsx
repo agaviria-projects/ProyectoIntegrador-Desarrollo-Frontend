@@ -29,10 +29,20 @@ function Sidebar() {
       }}
     >
       <img src={logo} alt="Logo" style={{ width: "150px", marginBottom: "10px" }} />
-      <h2 style={{ marginTop: "10px", marginBottom: "20px" ,fontSize: "18px", marginBottom: "30px" }}>EducationSystem</h2>
+      <h2 style={{ 
+        color: "#ffffff",  // hexadecimal por claridad
+        marginTop: "10px", 
+        marginBottom: "30px", 
+        fontSize: "18px",
+        fontWeight: "bold",
+        textAlign: "center"
+      }}>
+        EducationSystem
+      </h2>
+
       <nav style={{ width: "100%" }}>
           {rol?.toUpperCase() === "ADMIN" && (
-            <SidebarLink to="/usuarios" icon={<FaUserGraduate />} text="Gestión de Usuarios" />
+            <SidebarLink to="/gestion-usuarios" icon={<FaUserGraduate />} text="Gestión de Usuarios" />
           )}
         <SidebarLink to="/estudiantes" icon={<FaUserGraduate />} text="Estudiantes" />
         <SidebarLink to="/cursos" icon={<FaBook />} text="Cursos" />

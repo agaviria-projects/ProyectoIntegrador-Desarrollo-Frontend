@@ -85,7 +85,7 @@ function Dashboard() {
         <h2>EducationSystem</h2>
         <nav>
           {rol === "ADMIN" && (
-            <SidebarLink to="/usuarios" icon={<FaUserCog color="#ffffff" />}text="Gestión de Usuarios" />
+            <SidebarLink to="/gestion-usuarios" icon={<FaUserCog color="#ffffff" />} text="Gestión de Usuarios" />
           )}
           <SidebarLink to="/estudiantes" text="Estudiantes" />
           <SidebarLink to="/cursos" text="Cursos" />
