@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import './Dashboard.css';
 import { FaUserCog } from "react-icons/fa";
+import axios from "axios";
+
 
 import {
   FaUserGraduate,
@@ -62,14 +64,28 @@ function Dashboard() {
     whiteSpace: "nowrap"
   };
 
+  const [totalEstudiantes, setTotalEstudiantes] = useState(0);
+  const [totalCursos, setTotalCursos] = useState(0);
+  const [totalMatriculas, setTotalMatriculas] = useState(0);
+  const [totalProfesores, setTotalProfesores] = useState(0);
+  const [totalNotas, setTotalNotas] = useState(0);
+
   const cards = [
-    { icon: <FaUserGraduate />, label: "Estudiantes", value: 120, color: "#facc15" },
-    { icon: <FaBook />, label: "Cursos", value: 8, color: "#60a5fa" },
-    { icon: <FaClipboardList />, label: "Matrículas", value: 23, color: "#6ee7b7" },
-    { icon: <FaChalkboardTeacher />, label: "Profesores", value: 5, color: "#c4b5fd" },
-    { icon: <FaClipboardList />, label: "Notas", value: 12, color: "#fda4af" },
-    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" }
+    { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
+    { icon: <FaBook />, label: "Cursos", value: totalCursos, color: "#60a5fa" },
+    { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
+    { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
+    { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
+    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" } // este puede ser fijo o dinámico luego
   ];
+
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
+    axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
+    axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
+    axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
+    axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
+  }, []);
 
   const quickActions = [
     { icon: <FaPlus size={22} color="#2563eb" />, label: "Crear estudiante" },
