@@ -31,6 +31,8 @@ function Dashboard() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [fechaActual, setFechaActual] = useState("");
+  const [horaActual, setHoraActual] = useState("");
+
 
   useEffect(() => {
     if (rol === "PROFESOR") setFoto(profesorImg);
@@ -44,6 +46,14 @@ function Dashboard() {
       day: "numeric"
     });
     setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
+        const interval = setInterval(() => {
+        const hora = new Date().toLocaleTimeString("es-CO", { hour12: false });
+        setHoraActual(hora);
+    }, 1000);
+
+    // Limpiar el intervalo cuando se desmonte
+    return () => clearInterval(interval);
+
 
     console.log("ROL EN LOCALSTORAGE:", rol);
   }, [rol]);
@@ -72,14 +82,16 @@ function Dashboard() {
   const [totalUsuarios, setTotalUsuarios] = useState(0);
 
 
-  const cards = [
+  const dynamicCards = [
     { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
     { icon: <FaBook />, label: "Cursos", value: totalCursos, color: "#60a5fa" },
     { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
     { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
     { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
     { icon: <FaUserCog />, label: "Usuarios", value: totalUsuarios, color: "#f97316" },
-    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" } // este puede ser fijo o dinámico luego
+    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" }, 
+    { icon: "🕒", label: "Hora actual", value: horaActual, color: "#1e40af" },
+    { icon: "💡", label: "Motivación", value: "Sigue aprendiendo cada día", color: "#22c55e" }// este puede ser fijo o dinámico luego
   ];
 
   useEffect(() => {
@@ -155,7 +167,7 @@ function Dashboard() {
         </div>
 
         <div className="cards">
-          {cards.map((card, idx) => (
+          {dynamicCards.map((card, idx) => (
             <motion.div
               key={idx}
               whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
@@ -170,6 +182,7 @@ function Dashboard() {
             </motion.div>
           ))}
         </div>
+       
 
         <h3 style={{ textAlign: "center", margin: "40px 0 20px", fontSize: "18px", color: "#1e293b" }}>Accesos rápidos</h3>
         <div className="quick-actions">
