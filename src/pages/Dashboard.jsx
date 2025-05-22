@@ -69,6 +69,8 @@ function Dashboard() {
   const [totalMatriculas, setTotalMatriculas] = useState(0);
   const [totalProfesores, setTotalProfesores] = useState(0);
   const [totalNotas, setTotalNotas] = useState(0);
+  const [totalUsuarios, setTotalUsuarios] = useState(0);
+
 
   const cards = [
     { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
@@ -76,6 +78,7 @@ function Dashboard() {
     { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
     { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
     { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
+    { icon: <FaUserCog />, label: "Usuarios", value: totalUsuarios, color: "#f97316" },
     { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" } // este puede ser fijo o dinámico luego
   ];
 
@@ -85,6 +88,8 @@ function Dashboard() {
     axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
     axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
     axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
+    axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
+
   }, []);
 
   const quickActions = [
