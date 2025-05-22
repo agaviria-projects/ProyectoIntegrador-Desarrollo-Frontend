@@ -8,21 +8,25 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:8080/api/usuarios/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombreUsuario: username, contrasena: password }),
-    });
-
-    if (response.ok) {
-      const user = await response.json();
+    if (username === "admin" && password === "admin123") {
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userName", user.nombreUsuario);
-      localStorage.setItem("rol", user.rol);
+      localStorage.setItem("rol", "ADMIN");
+      localStorage.setItem("userName", "Héctor Alejandro Gaviria");
       navigate("/dashboard");
+    } else if (username === "estudiante" && password === "12345") {
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("rol", "ESTUDIANTE");
+      localStorage.setItem("userName", "Daniela Díaz");
+      navigate("/dashboard");
+    }  
+    else if (username === "profesor" && password === "45678") {
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("rol", "PROFESOR");
+      localStorage.setItem("userName", "Julián Torres");
+      navigate("/dashboard"); 
     } else {
       setError("Usuario o contraseña incorrectos");
     }
@@ -69,8 +73,8 @@ function Login() {
                 borderRadius: "8px",
                 marginBottom: "12px",
                 fontWeight: "bold",
-                width: "100%",           
-                boxSizing: "border-box"  
+                width: "100%",
+                boxSizing: "border-box",
               }}
             >
               {error}
@@ -125,4 +129,3 @@ function Login() {
 }
 
 export default Login;
-

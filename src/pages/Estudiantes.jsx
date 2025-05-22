@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import "./estudiantes.css";
 import logo from "../assets/logosinfondo.png";
 
 function Estudiantes() {
   const [filtro, setFiltro] = useState("");
-  const [estudiantes, setEstudiantes] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([
+    { id: 1, cedula: "1001", nombre: "Laura", apellido: "Gómez", email: "laura@correo.com" },
+    { id: 2, cedula: "1002", nombre: "Pedro", apellido: "Ruiz", email: "pedro@correo.com" }
+  ]);
+
   const [nuevo, setNuevo] = useState({
     id: null,
     cedula: "",
@@ -19,62 +22,47 @@ function Estudiantes() {
     setNuevo(estudiante);
   };
 
-  const cargarEstudiantes = async () => {
-    const res = await axios.get("http://localhost:8080/api/estudiantes");
-    const datos = Array.isArray(res.data) ? res.data : [];
-    setEstudiantes(datos);
-  };
-
-  useEffect(() => {
-    cargarEstudiantes();
-  }, []);
-
   const manejarCambio = (e) => {
     setNuevo({ ...nuevo, [e.target.name]: e.target.value });
   };
 
-  const guardarEstudiante = async (e) => {
+  const guardarEstudiante = (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:8080/api/estudiantes", nuevo);
-    cargarEstudiantes();
-    setNuevo({
-      id: null,
-      cedula: "",
-      nombre: "",
-      apellido: "",
-      email: "",
-      cantidadFaltas: 0,
-    });
+    const copia = [...estudiantes];
+    if (nuevo.id) {
+      const index = copia.findIndex(est => est.id === nuevo.id);
+      copia[index] = nuevo;
+    } else {
+      const nuevoEst = { ...nuevo, id: Date.now() };
+      copia.push(nuevoEst);
+    }
+    setEstudiantes(copia);
+    setNuevo({ id: null, cedula: "", nombre: "", apellido: "", email: "", cantidadFaltas: 0 });
   };
 
-  const eliminarEstudiante = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/estudiantes/${id}`);
-      cargarEstudiantes();
-    } catch (error) {
-      console.error("Error al eliminar estudiante:", error);
-    }
+  const eliminarEstudiante = (id) => {
+    const copia = estudiantes.filter(est => est.id !== id);
+    setEstudiantes(copia);
   };
 
   return (
     <div className="estudiantes-container">
       <button
-          onClick={() => window.location.href = "/dashboard"}
-          style={{
-            backgroundColor: "#ffffff",
-            color: "#2563eb",
-            border: "2px solid #2563eb",
-            borderRadius: "8px",
-            padding: "8px 16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginBottom: "20px",
-            marginTop: "10px"
-          }}
->
-  ← Volver al Dashboard
-</button>
-
+        onClick={() => window.location.href = "/dashboard"}
+        style={{
+          backgroundColor: "#ffffff",
+          color: "#2563eb",
+          border: "2px solid #2563eb",
+          borderRadius: "8px",
+          padding: "8px 16px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          marginBottom: "20px",
+          marginTop: "10px"
+        }}
+      >
+        ← Volver al Dashboard
+      </button>
 
       <div className="logo-lateral">
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
@@ -141,35 +129,22 @@ function Estudiantes() {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(estudiantes) &&
-              estudiantes
-                .filter(
-                  (e) =>
-                    e.cedula.toLowerCase().includes(filtro) ||
-                    e.nombre.toLowerCase().includes(filtro)
-                )
-                .map((e) => (
-                  <tr key={e.id}>
-                    <td>{e.cedula}</td>
-                    <td>{e.nombre}</td>
-                    <td>{e.apellido}</td>
-                    <td>{e.email}</td>
-                    <td>
-                      <button
-                        className="editar-btn"
-                        onClick={() => cargarEstudianteParaEditar(e)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="eliminar-btn"
-                        onClick={() => eliminarEstudiante(e.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+            {estudiantes
+              .filter(e =>
+                e.cedula.toLowerCase().includes(filtro) ||
+                e.nombre.toLowerCase().includes(filtro))
+              .map((e) => (
+                <tr key={e.id}>
+                  <td>{e.cedula}</td>
+                  <td>{e.nombre}</td>
+                  <td>{e.apellido}</td>
+                  <td>{e.email}</td>
+                  <td>
+                    <button className="editar-btn" onClick={() => cargarEstudianteParaEditar(e)}>Editar</button>
+                    <button className="eliminar-btn" onClick={() => eliminarEstudiante(e.id)}>Eliminar</button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
