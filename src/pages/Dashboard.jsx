@@ -1,23 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import './Dashboard.css';
-import { FaUserCog } from "react-icons/fa";
+import { FaUserCog, FaUserGraduate, FaBook, FaClipboardList, FaChalkboardTeacher, FaFilePdf, FaFileExcel, FaPlus, FaChartBar, FaWhatsapp, FaGithub, FaLinkedin } from "react-icons/fa";
 import axios from "axios";
-
-
-import {
-  FaUserGraduate,
-  FaBook,
-  FaClipboardList,
-  FaChalkboardTeacher,
-  FaFilePdf,
-  FaFileExcel,
-  FaPlus,
-  FaChartBar,
-  FaWhatsapp,
-  FaGithub,
-  FaLinkedin
-} from "react-icons/fa";
 
 import adminImg from "../assets/admin.jpg";
 import profesorImg from "../assets/profesor.JPG";
@@ -33,47 +18,6 @@ function Dashboard() {
   const [fechaActual, setFechaActual] = useState("");
   const [horaActual, setHoraActual] = useState("");
 
-
-  useEffect(() => {
-    if (rol === "PROFESOR") setFoto(profesorImg);
-    else if (rol === "ESTUDIANTE") setFoto(estudianteImg);
-    else setFoto(adminImg);
-
-    const hoy = new Date().toLocaleDateString("es-CO", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric"
-    });
-    setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
-        const interval = setInterval(() => {
-        const hora = new Date().toLocaleTimeString("es-CO", { hour12: false });
-        setHoraActual(hora);
-    }, 1000);
-
-    // Limpiar el intervalo cuando se desmonte
-    return () => clearInterval(interval);
-
-
-    console.log("ROL EN LOCALSTORAGE:", rol);
-  }, [rol]);
-
-  const cerrarSesion = () => {
-    localStorage.clear();
-    window.location.href = "/";
-  };
-
-  const estiloOpcion = {
-    padding: "8px 12px",
-    margin: 0,
-    fontSize: "14px",
-    color: "#1e293b",
-    cursor: "pointer",
-    borderRadius: "6px",
-    transition: "background 0.2s",
-    whiteSpace: "nowrap"
-  };
-
   const [totalEstudiantes, setTotalEstudiantes] = useState(0);
   const [totalCursos, setTotalCursos] = useState(0);
   const [totalMatriculas, setTotalMatriculas] = useState(0);
@@ -81,18 +25,22 @@ function Dashboard() {
   const [totalNotas, setTotalNotas] = useState(0);
   const [totalUsuarios, setTotalUsuarios] = useState(0);
 
+  useEffect(() => {
+    if (rol === "PROFESOR") setFoto(profesorImg);
+    else if (rol === "ESTUDIANTE") setFoto(estudianteImg);
+    else setFoto(adminImg);
 
-  const dynamicCards = [
-    { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
-    { icon: <FaBook />, label: "Cursos", value: totalCursos, color: "#60a5fa" },
-    { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
-    { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
-    { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
-    { icon: <FaUserCog />, label: "Usuarios", value: totalUsuarios, color: "#f97316" },
-    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" }, 
-    { icon: "🕒", label: "Hora actual", value: horaActual, color: "#1e40af" },
-    { icon: "💡", label: "Motivación", value: "Sigue aprendiendo cada día", color: "#22c55e" }// este puede ser fijo o dinámico luego
-  ];
+    const hoy = new Date().toLocaleDateString("es-CO", {
+      weekday: "long", year: "numeric", month: "long", day: "numeric"
+    });
+    setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
+
+    const interval = setInterval(() => {
+      const hora = new Date().toLocaleTimeString("es-CO", { hour12: false });
+      setHoraActual(hora);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [rol]);
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
@@ -101,8 +49,27 @@ function Dashboard() {
     axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
     axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
     axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
-
   }, []);
+
+  const cerrarSesion = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
+  const estiloOpcion = {
+    padding: "8px 12px", fontSize: "14px", color: "#1e293b",
+    cursor: "pointer", borderRadius: "6px", whiteSpace: "nowrap"
+  };
+
+  const cards = [
+    { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
+    { icon: <FaBook />, label: "Cursos", value: totalCursos, color: "#60a5fa" },
+    { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
+    { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
+    { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
+    { icon: <FaUserCog />, label: "Usuarios", value: totalUsuarios, color: "#f97316" },
+    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" }
+  ];
 
   const quickActions = [
     { icon: <FaPlus size={22} color="#2563eb" />, label: "Crear estudiante" },
@@ -117,34 +84,26 @@ function Dashboard() {
         <img src={logo} alt="Logo" />
         <h2>EducationSystem</h2>
         <nav>
-          {rol === "ADMIN" && (
-            <SidebarLink to="/gestion-usuarios" icon={<FaUserCog color="#ffffff" />} text="Gestión de Usuarios" />
-          )}
+          {rol === "ADMIN" && <SidebarLink to="/gestion-usuarios" icon={<FaUserCog color="#fff" />} text="Gestión de Usuarios" />}
           <SidebarLink to="/estudiantes" text="Estudiantes" />
           <SidebarLink to="/cursos" text="Cursos" />
           <SidebarLink to="/matriculas" text="Matrículas" />
           <SidebarLink to="/profesores" text="Profesores" />
           <SidebarLink to="/notas" text="Notas" />
           <SidebarLink to="/analitica" text="Análisis de datos" />
-          <a onClick={cerrarSesion} className="sidebar-link" style={{ cursor: "pointer" }}>
-            Cerrar sesión
-          </a>
+          <a onClick={cerrarSesion} className="sidebar-link">Cerrar sesión</a>
         </nav>
       </div>
 
       <div className="main-content">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <div>
-            <motion.h2
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              style={{ fontSize: "26px", marginBottom: "5px" }}
-            >
+            <motion.h2 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 ,type: "spring", stiffness: 80 }} style={{ fontSize: "34px",fontWeight: "700", marginBottom: "5px",color: "#bfa047",  textShadow: "1px 1px 2px rgba(0, 0, 0, 0.1)"}}>
               ¡Bienvenido, {username.replace('.', ' ')}!
             </motion.h2>
             <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>🎯 Tu gestión hace la diferencia.</p>
-            <p style={{ color: "#64748b", fontSize: "14px" }}>{fechaActual}</p>
+            <p style={{ color: "#64748b", fontSize: "14px",display: "flex", alignItems: "center", gap: "6px" , marginBottom: "10px"}}>
+                📅{fechaActual} | 🕒 {horaActual}</p>
           </div>
 
           <div style={{ position: "relative" }}>
@@ -167,22 +126,21 @@ function Dashboard() {
         </div>
 
         <div className="cards">
-          {dynamicCards.map((card, idx) => (
+          {cards.map((card, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
-              transition={{ type: "spring", stiffness: 300 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              whileHover={{ scale: 1.05 }}
               className="card"
             >
-              <motion.div whileHover={{ rotate: 10 }} style={{ fontSize: "26px", color: card.color }}>
-                {card.icon}
-              </motion.div>
+              <div style={{ fontSize: "26px", color: card.color }}>{card.icon}</div>
               <h3 style={{ fontSize: "15px", margin: "8px 0 4px" }}>{card.label}</h3>
               <p style={{ fontSize: "18px", fontWeight: "bold" }}>{card.value}</p>
             </motion.div>
           ))}
         </div>
-       
 
         <h3 style={{ textAlign: "center", margin: "40px 0 20px", fontSize: "18px", color: "#1e293b" }}>Accesos rápidos</h3>
         <div className="quick-actions">
@@ -216,18 +174,10 @@ function Dashboard() {
           whileHover={{ scale: 1.1, x: -10 }}
           transition={{ type: "spring", stiffness: 300 }}
           style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#075e54",
-            borderRadius: "9999px",
-            padding: "8px 16px",
-            color: "white",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            cursor: "pointer"
+            position: "fixed", bottom: "20px", right: "20px", zIndex: 1000,
+            display: "flex", alignItems: "center", backgroundColor: "#075e54",
+            borderRadius: "9999px", padding: "8px 16px", color: "white",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer"
           }}
         >
           <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
@@ -264,9 +214,7 @@ function Dashboard() {
 }
 
 function SidebarLink({ to, text }) {
-  return (
-    <a href={to} className="sidebar-link">{text}</a>
-  );
+  return <a href={to} className="sidebar-link">{text}</a>;
 }
 
 export default Dashboard;
