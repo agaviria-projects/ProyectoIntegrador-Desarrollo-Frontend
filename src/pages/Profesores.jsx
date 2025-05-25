@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "./profesores.css"; // Reutilizamos el estilo
+import "./profesores.css";
 import logo from "../assets/logosinfondo.png";
 
 function Profesores() {
@@ -18,8 +18,13 @@ function Profesores() {
   };
 
   const cargarProfesores = async () => {
-    const res = await axios.get("http://localhost:8080/api/profesores");
-    setProfesores(Array.isArray(res.data) ? res.data : []);
+    try {
+      const res = await axios.get("http://localhost:8080/api/profesores/dto");
+      console.log("Profesores cargados(DTO):", res.data);
+      setProfesores(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Error cargando profesores:", error);
+    }
   };
 
   useEffect(() => {
@@ -32,14 +37,13 @@ function Profesores() {
 
   const guardarProfesor = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:8080/api/profesores", nuevo);
-    cargarProfesores();
-    setNuevo({
-      id: null,
-      nombre: "",
-      especialidad: "",
-      email: "",
-    });
+    try {
+      await axios.post("http://localhost:8080/api/profesores", nuevo);
+      cargarProfesores(); // Recargar lista
+      setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
+    } catch (error) {
+      console.error("Error guardando profesor:", error);
+    }
   };
 
   const eliminarProfesor = async (id) => {
@@ -74,36 +78,34 @@ function Profesores() {
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
       </div>
 
-      <div style={{ flex: 1 }}>
-        <h2>👨‍🏫 Gestión de Profesores</h2>
+      <h2>👨‍🏫 Gestión de Profesores</h2>
 
-        <form onSubmit={guardarProfesor} className="estudiante-form">
-          <input
-            name="nombre"
-            placeholder="Nombre"
-            value={nuevo.nombre}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            name="especialidad"
-            placeholder="Especialidad"
-            value={nuevo.especialidad}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            name="email"
-            placeholder="Email"
-            value={nuevo.email}
-            onChange={manejarCambio}
-            required
-          />
-          <button type="submit" className="guardar-btn">
-            Guardar
-          </button>
-        </form>
-      </div>
+      <form onSubmit={guardarProfesor} className="estudiante-form">
+        <input
+          name="nombre"
+          placeholder="Nombre"
+          value={nuevo.nombre}
+          onChange={manejarCambio}
+          required
+        />
+        <input
+          name="especialidad"
+          placeholder="Especialidad"
+          value={nuevo.especialidad}
+          onChange={manejarCambio}
+          required
+        />
+        <input
+          name="email"
+          placeholder="Email"
+          value={nuevo.email}
+          onChange={manejarCambio}
+          required
+        />
+        <button type="submit" className="guardar-btn">
+          Guardar
+        </button>
+      </form>
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -140,16 +142,10 @@ function Profesores() {
                     <td>{p.especialidad}</td>
                     <td>{p.email}</td>
                     <td>
-                      <button
-                        className="editar-btn"
-                        onClick={() => cargarProfesorParaEditar(p)}
-                      >
+                      <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>
                         Editar
                       </button>
-                      <button
-                        className="eliminar-btn"
-                        onClick={() => eliminarProfesor(p.id)}
-                      >
+                      <button className="eliminar-btn" onClick={() => eliminarProfesor(p.id)}>
                         Eliminar
                       </button>
                     </td>
