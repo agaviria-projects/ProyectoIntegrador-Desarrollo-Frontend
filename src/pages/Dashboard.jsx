@@ -207,15 +207,29 @@ function Dashboard() {
             
           </div>
         )}
-       <a
-          href="https://wa.me/573006199324" 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whatsapp-float"
+       <motion.div
+          whileHover={{ scale: 1.1, x: -10 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#075e54",
+            borderRadius: "9999px",
+            padding: "8px 16px",
+            color: "white",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            cursor: "pointer"
+          }}
         >
-          <FaWhatsapp className="whatsapp-icon" />
-          <span className="whatsapp-text">¿Necesitas ayuda?</span>
-        </a>
+          <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
+          <a href="https://wa.me/573006199324" target="_blank" rel="noopener noreferrer" style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+            Hablemos por Whatsapp
+          </a>
+        </motion.div>
       
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
