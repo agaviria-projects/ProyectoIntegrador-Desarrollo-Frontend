@@ -4,6 +4,7 @@ import './Dashboard.css';
 import { FaUserCog, FaUserGraduate, FaBook, FaClipboardList, FaChalkboardTeacher, FaFilePdf, FaFileExcel, FaPlus, FaChartBar, FaWhatsapp, FaGithub, FaLinkedin } from "react-icons/fa";
 import axios from "axios";
 
+
 import adminImg from "../assets/admin.jpg";
 import profesorImg from "../assets/profesor.JPG";
 import estudianteImg from "../assets/estudiante.JPG";
@@ -91,7 +92,9 @@ function Dashboard() {
           <SidebarLink to="/profesores" text="Profesores" />
           <SidebarLink to="/notas" text="Notas" />
           <SidebarLink to="/analitica" text="Análisis de datos" />
-          <a onClick={cerrarSesion} className="sidebar-link">Cerrar sesión</a>
+          <a onClick={cerrarSesion} className="sidebar-link" style={{cursor:"pointer"}}>
+            Cerrar sesión
+          </a>
         </nav>
       </div>
 
@@ -132,10 +135,16 @@ function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.08 }}
               className="card"
             >
-              <div style={{ fontSize: "26px", color: card.color }}>{card.icon}</div>
+              <motion.div
+                whileHover={{ rotate: 35, scale: 1.2 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                style={{ fontSize: "32px", color: card.color }}
+              >
+                {card.icon}
+              </motion.div>
               <h3 style={{ fontSize: "15px", margin: "8px 0 4px" }}>{card.label}</h3>
               <p style={{ fontSize: "18px", fontWeight: "bold" }}>{card.value}</p>
             </motion.div>
