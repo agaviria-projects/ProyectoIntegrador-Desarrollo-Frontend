@@ -204,9 +204,19 @@ function Dashboard() {
                 Cerrar
               </button>
             </div>
+            
           </div>
         )}
-
+       <a
+          href="https://wa.me/573006199324" 
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-float"
+        >
+          <FaWhatsapp className="whatsapp-icon" />
+          <span className="whatsapp-text">¿Necesitas ayuda?</span>
+        </a>
+      
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
           <p>Versión 1.0.0</p>
