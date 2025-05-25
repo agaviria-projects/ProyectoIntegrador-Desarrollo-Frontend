@@ -189,3 +189,22 @@ table thead th {
   margin: 4px 0;
 }
 
+.buscador {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buscador input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-image: url('../assets/lupa.svg'); /* ícono de lupa si lo tienes */
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  padding-left: 35px;
+}

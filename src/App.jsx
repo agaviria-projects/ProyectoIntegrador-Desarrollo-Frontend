@@ -5,6 +5,7 @@ import Estudiantes from './pages/Estudiantes';
 import ProtectedRoute from './components/ProtectedRoute';
 import GestionUsuarios from "./pages/GestionUsuarios";
 import LayoutProtegido from './components/LayoutProtegido';
+import Cursos from './pages/Cursos';
 
 
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/estudiantes" element={<Estudiantes />} />
           <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+          <Route path="/cursos" element={<Cursos/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
