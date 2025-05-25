@@ -10,22 +10,16 @@ function Cursos() {
     id: null,
     nombre: "",
     descripcion: "",
-    profesor: { id: "" },
+    profesorId: ""
   });
 
-  const cargarCursoParaEditar = (curso) => {
-    setNuevo({
-      id: curso.id,
-      nombre: curso.nombre,
-      descripcion: curso.descripcion,
-      profesor: { id: curso.profesor?.id || "" },
-    });
-  };
-
   const cargarCursos = async () => {
-    const res = await axios.get("http://localhost:8080/api/cursos");
-    const datos = Array.isArray(res.data) ? res.data : [];
-    setCursos(datos);
+    try {
+      const res = await axios.get("http://localhost:8080/api/cursos/dto");
+      setCursos(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Error cargando cursos:", error);
+    }
   };
 
   useEffect(() => {
@@ -33,19 +27,22 @@ function Cursos() {
   }, []);
 
   const manejarCambio = (e) => {
-    const { name, value } = e.target;
-    if (name === "profesorId") {
-      setNuevo({ ...nuevo, profesor: { id: value } });
-    } else {
-      setNuevo({ ...nuevo, [name]: value });
-    }
+    setNuevo({ ...nuevo, [e.target.name]: e.target.value });
   };
 
   const guardarCurso = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:8080/api/cursos", nuevo);
-    cargarCursos();
-    setNuevo({ id: null, nombre: "", descripcion: "", profesor: { id: "" } });
+    try {
+      await axios.post("http://localhost:8080/api/cursos", {
+        nombre: nuevo.nombre,
+        descripcion: nuevo.descripcion,
+        profesor: { id: parseInt(nuevo.profesorId) }
+      });
+      cargarCursos();
+      setNuevo({ id: null, nombre: "", descripcion: "", profesorId: "" });
+    } catch (error) {
+      console.error("Error guardando curso:", error);
+    }
   };
 
   const eliminarCurso = async (id) => {
@@ -59,20 +56,7 @@ function Cursos() {
 
   return (
     <div className="estudiantes-container">
-      <button
-        onClick={() => (window.location.href = "/dashboard")}
-        style={{
-          backgroundColor: "#ffffff",
-          color: "#2563eb",
-          border: "2px solid #2563eb",
-          borderRadius: "8px",
-          padding: "8px 16px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          marginBottom: "20px",
-          marginTop: "10px",
-        }}
-      >
+      <button onClick={() => window.location.href = "/dashboard"} className="btn-volver">
         ← Volver al Dashboard
       </button>
 
@@ -80,36 +64,14 @@ function Cursos() {
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
       </div>
 
-      <div style={{ flex: 1 }}>
-        <h2>💼 Gestión de Cursos</h2>
+      <h2>📦 Gestión de Cursos</h2>
 
-        <form onSubmit={guardarCurso} className="estudiante-form">
-          <input
-            name="nombre"
-            placeholder="Nombre"
-            value={nuevo.nombre}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            name="descripcion"
-            placeholder="Descripción"
-            value={nuevo.descripcion}
-            onChange={manejarCambio}
-            required
-          />
-          <input
-            name="profesorId"
-            placeholder="ID Profesor"
-            value={nuevo.profesor.id}
-            onChange={manejarCambio}
-            required
-          />
-          <button type="submit" className="guardar-btn">
-            Guardar
-          </button>
-        </form>
-      </div>
+      <form onSubmit={guardarCurso} className="estudiante-form">
+        <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
+        <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
+        <input name="profesorId" placeholder="ID Profesor" value={nuevo.profesorId} onChange={manejarCambio} required />
+        <button type="submit" className="guardar-btn">Guardar</button>
+      </form>
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -133,30 +95,30 @@ function Cursos() {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(cursos) &&
-              cursos
-                .filter((c) => c.nombre.toLowerCase().includes(filtro))
-                .map((c) => (
-                  <tr key={c.id}>
-                    <td>{c.nombre}</td>
-                    <td>{c.descripcion}</td>
-                    <td>{c.profesor?.nombre || ""}</td>
-                    <td>
-                      <button
-                        className="editar-btn"
-                        onClick={() => cargarCursoParaEditar(c)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="eliminar-btn"
-                        onClick={() => eliminarCurso(c.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+            {cursos
+              .filter(c => c.nombre.toLowerCase().includes(filtro))
+              .map((c) => (
+                <tr key={c.id}>
+                  <td>{c.nombre}</td>
+                  <td>{c.descripcion}</td>
+                  <td>{c.nombreProfesor}</td>
+                  <td>
+                    <button className="editar-btn" onClick={() =>
+                      setNuevo({
+                        id: c.id,
+                        nombre: c.nombre,
+                        descripcion: c.descripcion,
+                        profesorId: "" // no se puede recuperar del DTO
+                      })
+                    }>
+                      Editar
+                    </button>
+                    <button className="eliminar-btn" onClick={() => eliminarCurso(c.id)}>
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

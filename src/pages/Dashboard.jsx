@@ -18,6 +18,7 @@ function Dashboard() {
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [fechaActual, setFechaActual] = useState("");
   const [horaActual, setHoraActual] = useState("");
+  
 
   const [totalEstudiantes, setTotalEstudiantes] = useState(0);
   const [totalCursos, setTotalCursos] = useState(0);
@@ -45,7 +46,7 @@ function Dashboard() {
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
-    axios.get("http://localhost:8080/api/cursos").then(res => setTotalCursos(res.data.length));
+    axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
     axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
     axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
     axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
