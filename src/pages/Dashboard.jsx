@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import './Dashboard.css';
-import { FaUserCog, FaUserGraduate, FaBook, FaClipboardList, FaChalkboardTeacher, FaFilePdf, FaFileExcel, FaPlus, FaChartBar, FaWhatsapp, FaGithub, FaLinkedin } from "react-icons/fa";
+import {
+  FaUserCog, FaUserGraduate, FaBook, FaClipboardList,
+  FaChalkboardTeacher, FaFilePdf, FaFileExcel, FaPlus,
+  FaChartBar, FaWhatsapp, FaGithub, FaLinkedin
+} from "react-icons/fa";
 import axios from "axios";
-
 
 import adminImg from "../assets/admin.jpg";
 import profesorImg from "../assets/profesor.JPG";
@@ -18,7 +21,6 @@ function Dashboard() {
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [fechaActual, setFechaActual] = useState("");
   const [horaActual, setHoraActual] = useState("");
-  
 
   const [totalEstudiantes, setTotalEstudiantes] = useState(0);
   const [totalCursos, setTotalCursos] = useState(0);
@@ -37,20 +39,26 @@ function Dashboard() {
     });
     setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
 
-    const interval = setInterval(() => {
+    const intervalHora = setInterval(() => {
       const hora = new Date().toLocaleTimeString("es-CO", { hour12: false });
       setHoraActual(hora);
     }, 1000);
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalHora);
   }, [rol]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
-    axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
-    axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
-    axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
-    axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
-    axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
+    const fetchData = () => {
+      axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
+      axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
+      axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
+      axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
+      axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
+      axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
+    };
+
+    fetchData(); // inicial
+    const interval = setInterval(fetchData, 5000); // cada 5 segundos
+    return () => clearInterval(interval);
   }, []);
 
   const cerrarSesion = () => {
@@ -93,7 +101,7 @@ function Dashboard() {
           <SidebarLink to="/profesores" text="Profesores" />
           <SidebarLink to="/notas" text="Notas" />
           <SidebarLink to="/analitica" text="Análisis de datos" />
-          <a onClick={cerrarSesion} className="sidebar-link" style={{cursor:"pointer"}}>
+          <a onClick={cerrarSesion} className="sidebar-link" style={{ cursor: "pointer" }}>
             Cerrar sesión
           </a>
         </nav>
@@ -102,12 +110,18 @@ function Dashboard() {
       <div className="main-content">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <div>
-            <motion.h2 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 ,type: "spring", stiffness: 80 }} style={{ fontSize: "34px",fontWeight: "700", marginBottom: "5px",color: "#bfa047",  textShadow: "1px 1px 2px rgba(0, 0, 0, 0.1)"}}>
+            <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
+              style={{ fontSize: "34px", fontWeight: "700", marginBottom: "5px", color: "#bfa047" }}
+            >
               ¡Bienvenido, {username.replace('.', ' ')}!
             </motion.h2>
             <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>🎯 Tu gestión hace la diferencia.</p>
-            <p style={{ color: "#64748b", fontSize: "14px",display: "flex", alignItems: "center", gap: "6px" , marginBottom: "10px"}}>
-                📅{fechaActual} | 🕒 {horaActual}</p>
+            <p style={{ color: "#64748b", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px" }}>
+              📅{fechaActual} | 🕒 {horaActual}
+            </p>
           </div>
 
           <div style={{ position: "relative" }}>
@@ -120,7 +134,7 @@ function Dashboard() {
               onClick={() => setMenuAbierto(!menuAbierto)}
             />
             {rol === "ADMIN" && menuAbierto && (
-              <div style={{ position: "absolute", top: "90px", right: 0, backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", padding: "12px", minWidth: "160px", zIndex: 1000 }}>
+              <div style={{ position: "absolute", top: "90px", right: 0, backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", padding: "12px", minWidth: "180px", zIndex: 1000 }}>
                 <p style={estiloOpcion} onClick={() => setMostrarPerfil(true)}>👤 Ver perfil</p>
                 <p style={estiloOpcion}>✏️ Editar</p>
                 <p style={estiloOpcion} onClick={cerrarSesion}>🔒 Cerrar sesión</p>
@@ -160,13 +174,8 @@ function Dashboard() {
               whileHover={{ scale: 1.07 }}
               transition={{ type: "spring", stiffness: 300 }}
               style={{
-                background: "#ffffff",
-                borderRadius: "12px",
-                padding: "18px",
-                minWidth: "150px",
-                textAlign: "center",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                cursor: "pointer"
+                background: "#ffffff", borderRadius: "12px", padding: "18px", minWidth: "150px",
+                textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.08)", cursor: "pointer"
               }}
             >
               <div>{action.icon}</div>
@@ -174,27 +183,6 @@ function Dashboard() {
             </motion.div>
           ))}
         </div>
-
-        <footer className="footer-institucional">
-          <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
-          <p>Versión 1.0.0</p>
-        </footer>
-
-        <motion.div
-          whileHover={{ scale: 1.1, x: -10 }}
-          transition={{ type: "spring", stiffness: 300 }}
-          style={{
-            position: "fixed", bottom: "20px", right: "20px", zIndex: 1000,
-            display: "flex", alignItems: "center", backgroundColor: "#075e54",
-            borderRadius: "9999px", padding: "8px 16px", color: "white",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer"
-          }}
-        >
-          <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
-          <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
-            Hablemos por Whatsapp
-          </a>
-        </motion.div>
 
         {mostrarPerfil && (
           <div style={{
@@ -218,6 +206,11 @@ function Dashboard() {
             </div>
           </div>
         )}
+
+        <footer className="footer-institucional">
+          <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
+          <p>Versión 1.0.0</p>
+        </footer>
       </div>
     </div>
   );
