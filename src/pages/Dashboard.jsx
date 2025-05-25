@@ -45,7 +45,7 @@ function Dashboard() {
 
   useEffect(() => {
     axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
-    axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
+    axios.get("http://localhost:8080/api/cursos").then(res => setTotalCursos(res.data.length));
     axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
     axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
     axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));

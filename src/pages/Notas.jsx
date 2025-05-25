@@ -18,7 +18,7 @@ function Notas() {
   });
 
   const cargarNotas = async () => {
-    const res = await axios.get("http://localhost:8080/api/notas");
+    const res = await axios.get("http://localhost:8080/api/notas/dto");
     setNotas(Array.isArray(res.data) ? res.data : []);
   };
 
@@ -44,6 +44,12 @@ function Notas() {
 
   const guardarNota = async (e) => {
     e.preventDefault();
+    const notaNum = parseFloat(nuevaNota.nota);
+    if (notaNum < 1 || notaNum > 5) {
+      alert("La nota debe estar entre 1.0 y 5.0");
+      return;
+    }
+
     await axios.post("http://localhost:8080/api/notas", {
       id: nuevaNota.id,
       nota: nuevaNota.nota,
@@ -51,6 +57,7 @@ function Notas() {
       estudianteId: nuevaNota.estudianteId,
       cursoId: nuevaNota.cursoId
     });
+
     cargarNotas();
     setNuevaNota({
       id: null,
@@ -110,10 +117,15 @@ function Notas() {
           <input
             name="nota"
             type="number"
-            step="0.01"
-            placeholder="Nota"
+            step="0.1"
+            min="1"
+            max="5"
+            placeholder="Nota (ej.4.5)"
             value={nuevaNota.nota}
-            onChange={manejarCambio}
+            onChange={e => {
+              const valor = e.target.value.replace(',', '.');
+              setNuevaNota({ ...nuevaNota, nota: valor });
+            }}
             required
           />
           <input
@@ -175,37 +187,36 @@ function Notas() {
             <tr>
               <th>Nota</th>
               <th>Fecha</th>
-              <th>ID Estudiante</th>
-              <th>ID Curso</th>
+              <th>Estudiante</th>
+              <th>Curso</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(notas) &&
-              notas
-                .filter((n) => n.nota.toString().includes(filtro))
-                .map((n) => (
-                  <tr key={n.id}>
-                    <td>{n.nota}</td>
-                    <td>{n.fechaNota}</td>
-                    <td>{n.estudianteId}</td>
-                    <td>{n.cursoId}</td>
-                    <td>
-                      <button
-                        className="editar-btn"
-                        onClick={() => cargarNotaParaEditar(n)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="eliminar-btn"
-                        onClick={() => eliminarNota(n.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+            {notas
+              .filter(n => n.nota.toString().includes(filtro))
+              .map((n) => (
+                <tr key={n.id}>
+                  <td>{n.nota}</td>
+                  <td>{n.fechaNota}</td>
+                  <td>{n.nombreEstudiante} {n.apellidoEstudiante}</td>
+                  <td>{n.nombreCurso}</td>
+                  <td>
+                    <button
+                      className="editar-btn"
+                      onClick={() => cargarNotaParaEditar(n)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="eliminar-btn"
+                      onClick={() => eliminarNota(n.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
