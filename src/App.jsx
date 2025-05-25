@@ -9,6 +9,7 @@ import Cursos from './pages/Cursos';
 import Matriculas from './pages/Matriculas';
 import Profesores from './pages/Profesores';
 import Notas from './pages/Notas';
+import Analitica from './pages/Analitica';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/matriculas" element={<Matriculas/>}/>
           <Route path="/profesores" element={<Profesores/>}/>
           <Route path="/notas" element={<Notas/>}/>
+          <Route path="/analitica" element={<Analitica/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -54,11 +54,24 @@ function Cursos() {
     }
   };
 
-  return (
-    <div className="estudiantes-container">
-      <button onClick={() => window.location.href = "/dashboard"} className="btn-volver">
-        ← Volver al Dashboard
-      </button>
+      return (
+        <div className="estudiantes-container">
+          <button
+              onClick={() => window.location.href = "/dashboard"}
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#2563eb",
+                border: "2px solid #2563eb",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginBottom: "20px",
+                marginTop: "10px"
+              }}
+    >
+      ← Volver al Dashboard
+    </button>
 
       <div className="logo-lateral">
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
