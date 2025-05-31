@@ -87,7 +87,7 @@ function Dashboard() {
     {
       icon: <FaSlideshare size={22} color="#b91c1c" />,
       label: "Presentación técnica",
-      action: () => window.open("https://gamma.app/embed/presentacion-educationsystem", "_blank")
+      action: () => window.open("https://gamma.app/docs/EducationSystem-Proyecto-Integrador-2025-41t14uwve25tsce?mode=present#card-pgwf57irix8rdtj", "_blank")
     },
     { icon: <FaFileExcel size={22} color="#16a34a" />, label: "Exportar a Excel" }
   ];
@@ -213,11 +213,33 @@ function Dashboard() {
           </a>
         </motion.div>
 
+        {mostrarPerfil && (
+          <div style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
+            alignItems: "center", zIndex: 2000
+          }}>
+            <div style={{
+              backgroundColor: "#fff", padding: "30px", borderRadius: "12px",
+              width: "400px", boxShadow: "0 8px 20px rgba(0,0,0,0.2)", textAlign: "center", position: "relative"
+            }}>
+              <h2 style={{ marginBottom: "10px" }}>Perfil profesional</h2>
+              <img src={foto} alt="perfil" style={{ width: "80px", borderRadius: "50%", marginBottom: "12px" }} />
+              <p><strong>Nombre completo:</strong> Héctor Alejandro Gaviria Marín</p>
+              <p><strong>Email:</strong> agaviria1408@gmail.com</p>
+              <p><strong>GitHub:</strong> <a href="https://github.com/agaviria-projects" target="_blank" rel="noopener noreferrer"><FaGithub /> github.com/agaviria-projects</a></p>
+              <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/héctor-alejandro-gaviria-marin-43296265" target="_blank" rel="noopener noreferrer"><FaLinkedin /> linkedin.com/in/héctor-alejandro-gaviria-marin-43296265</a></p>
+              <button onClick={() => setMostrarPerfil(false)} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: "#0f172a", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        )}
+
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
           <p>Versión 1.0.0</p>
         </footer>
-        
       </div>
     </div>
   );
