@@ -230,11 +230,12 @@ function Dashboard() {
             Hablemos por Whatsapp
           </a>
         </motion.div>
-      
+        
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
           <p>Versión 1.0.0</p>
         </footer>
+
       </div>
     </div>
   );

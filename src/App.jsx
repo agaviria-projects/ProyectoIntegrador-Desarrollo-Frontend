@@ -12,6 +12,7 @@ import Notas from './pages/Notas';
 import Analitica from './pages/Analitica';
 
 
+
 function App() {
   return (
     <BrowserRouter>
