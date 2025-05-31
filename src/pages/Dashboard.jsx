@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import './Dashboard.css';
 import {
   FaUserCog, FaUserGraduate, FaBook, FaClipboardList,
-  FaChalkboardTeacher, FaFilePdf, FaFileExcel, FaPlus,
-  FaChartBar, FaWhatsapp, FaGithub, FaLinkedin
+  FaChalkboardTeacher, FaFileExcel, FaPlus, FaChartBar,
+  FaWhatsapp, FaGithub, FaLinkedin, FaSlideshare
 } from "react-icons/fa";
 import axios from "axios";
 
@@ -56,8 +56,8 @@ function Dashboard() {
       axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
     };
 
-    fetchData(); // inicial
-    const interval = setInterval(fetchData, 5000); // cada 5 segundos
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -84,7 +84,11 @@ function Dashboard() {
   const quickActions = [
     { icon: <FaPlus size={22} color="#2563eb" />, label: "Crear estudiante" },
     { icon: <FaPlus size={22} color="#2563eb" />, label: "Crear curso" },
-    { icon: <FaFilePdf size={22} color="#dc2626" />, label: "Generar PDF" },
+    {
+      icon: <FaSlideshare size={22} color="#b91c1c" />,
+      label: "Presentación técnica",
+      action: () => window.open("https://gamma.app/embed/presentacion-educationsystem", "_blank")
+    },
     { icon: <FaFileExcel size={22} color="#16a34a" />, label: "Exportar a Excel" }
   ];
 
@@ -177,6 +181,7 @@ function Dashboard() {
                 background: "#ffffff", borderRadius: "12px", padding: "18px", minWidth: "150px",
                 textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.08)", cursor: "pointer"
               }}
+              onClick={action.action || undefined}
             >
               <div>{action.icon}</div>
               <p style={{ marginTop: "12px", fontSize: "14px", fontWeight: "bold", color: "#1e293b" }}>{action.label}</p>
@@ -184,30 +189,7 @@ function Dashboard() {
           ))}
         </div>
 
-        {mostrarPerfil && (
-          <div style={{
-            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
-            alignItems: "center", zIndex: 2000
-          }}>
-            <div style={{
-              backgroundColor: "#fff", padding: "30px", borderRadius: "12px",
-              width: "400px", boxShadow: "0 8px 20px rgba(0,0,0,0.2)", textAlign: "center", position: "relative"
-            }}>
-              <h2 style={{ marginBottom: "10px" }}>Perfil profesional</h2>
-              <img src={foto} alt="perfil" style={{ width: "80px", borderRadius: "50%", marginBottom: "12px" }} />
-              <p><strong>Nombre completo:</strong> Héctor Alejandro Gaviria Marín</p>
-              <p><strong>Email:</strong> agaviria1408@gmail.com</p>
-              <p><strong>GitHub:</strong> <a href="https://github.com/agaviria-projects" target="_blank" rel="noopener noreferrer"><FaGithub /> github.com/agaviria-projects</a></p>
-              <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/héctor-alejandro-gaviria-marin-43296265" target="_blank" rel="noopener noreferrer"><FaLinkedin /> linkedin.com/in/héctor-alejandro-gaviria-marin-43296265</a></p>
-              <button onClick={() => setMostrarPerfil(false)} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: "#0f172a", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}>
-                Cerrar
-              </button>
-            </div>
-            
-          </div>
-        )}
-       <motion.div
+        <motion.div
           whileHover={{ scale: 1.1, x: -10 }}
           transition={{ type: "spring", stiffness: 300 }}
           style={{
@@ -230,12 +212,12 @@ function Dashboard() {
             Hablemos por Whatsapp
           </a>
         </motion.div>
-        
+
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
           <p>Versión 1.0.0</p>
         </footer>
-
+        
       </div>
     </div>
   );
