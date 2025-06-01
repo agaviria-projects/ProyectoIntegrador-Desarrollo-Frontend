@@ -17,6 +17,7 @@ function Dashboard() {
   const [foto, setFoto] = useState(adminImg);
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const username = localStorage.getItem("userName") || "admin";
+  const rolTexto = rol === "ADMIN" ? "Administrador" : rol === "PROFESOR" ? "Profesor" : "Estudiante";
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [fechaActual, setFechaActual] = useState("");
@@ -118,9 +119,10 @@ function Dashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
-              style={{ fontSize: "34px", fontWeight: "700", marginBottom: "5px", color: "#bfa047" }}
-            >
-              ¡Bienvenido, {username.replace('.', ' ')}!
+              style={{ fontSize: "28px", fontWeight: "600", marginBottom: "5px", color: "#bfa047" }}
+            > 
+              
+              <h2>¡Bienvenido {rolTexto}, {username.replace('.', ' ')}!</h2>
             </motion.h2>
             <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>🎯 Tu gestión hace la diferencia.</p>
             <p style={{ color: "#64748b", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px" }}>

@@ -13,10 +13,24 @@ function Cursos() {
     profesorId: ""
   });
 
+  const rol = localStorage.getItem("rol")?.toUpperCase();
+  const userName = localStorage.getItem("userName");
+
   const cargarCursos = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/cursos/dto");
-      setCursos(Array.isArray(res.data) ? res.data : []);
+      const todosLosCursos = Array.isArray(res.data) ? res.data : [];
+      let cursosFiltrados = todosLosCursos;
+
+      if (rol === "PROFESOR") {
+        cursosFiltrados = todosLosCursos.filter(c => c.emailProfesor === userName);
+      } else if (rol === "ESTUDIANTE") {
+        cursosFiltrados = todosLosCursos.filter(c =>
+          c.estudiantes?.some(e => e.email === userName)
+        );
+      }
+
+      setCursos(cursosFiltrados);
     } catch (error) {
       console.error("Error cargando cursos:", error);
     }
@@ -54,24 +68,24 @@ function Cursos() {
     }
   };
 
-      return (
-        <div className="estudiantes-container">
-          <button
-              onClick={() => window.location.href = "/dashboard"}
-              style={{
-                backgroundColor: "#ffffff",
-                color: "#2563eb",
-                border: "2px solid #2563eb",
-                borderRadius: "8px",
-                padding: "8px 16px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                marginBottom: "20px",
-                marginTop: "10px"
-              }}
-    >
-      ← Volver al Dashboard
-    </button>
+  return (
+    <div className="estudiantes-container">
+      <button
+        onClick={() => window.location.href = "/dashboard"}
+        style={{
+          backgroundColor: "#ffffff",
+          color: "#2563eb",
+          border: "2px solid #2563eb",
+          borderRadius: "8px",
+          padding: "8px 16px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          marginBottom: "20px",
+          marginTop: "10px"
+        }}
+      >
+        ← Volver al Dashboard
+      </button>
 
       <div className="logo-lateral">
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
@@ -79,12 +93,14 @@ function Cursos() {
 
       <h2>📦 Gestión de Cursos</h2>
 
-      <form onSubmit={guardarCurso} className="estudiante-form">
-        <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
-        <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
-        <input name="profesorId" placeholder="ID Profesor" value={nuevo.profesorId} onChange={manejarCambio} required />
-        <button type="submit" className="guardar-btn">Guardar</button>
-      </form>
+      {rol === "ADMIN" && (
+        <form onSubmit={guardarCurso} className="estudiante-form">
+          <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
+          <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
+          <input name="profesorId" placeholder="ID Profesor" value={nuevo.profesorId} onChange={manejarCambio} required />
+          <button type="submit" className="guardar-btn">Guardar</button>
+        </form>
+      )}
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -104,7 +120,7 @@ function Cursos() {
               <th>Nombre</th>
               <th>Descripción</th>
               <th>Profesor</th>
-              <th>Acciones</th>
+              {rol === "ADMIN" && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -115,23 +131,26 @@ function Cursos() {
                   <td>{c.nombre}</td>
                   <td>{c.descripcion}</td>
                   <td>{c.nombreProfesor}</td>
-                  <td>
-                    <button className="editar-btn" onClick={() =>
-                      setNuevo({
-                        id: c.id,
-                        nombre: c.nombre,
-                        descripcion: c.descripcion,
-                        profesorId: "" // no se puede recuperar del DTO
-                      })
-                    }>
-                      Editar
-                    </button>
-                    <button className="eliminar-btn" onClick={() => eliminarCurso(c.id)}>
-                      Eliminar
-                    </button>
-                  </td>
+                  {rol === "ADMIN" && (
+                    <td>
+                      <button className="editar-btn" onClick={() =>
+                        setNuevo({
+                          id: c.id,
+                          nombre: c.nombre,
+                          descripcion: c.descripcion,
+                          profesorId: ""
+                        })
+                      }>
+                        Editar
+                      </button>
+                      <button className="eliminar-btn" onClick={() => eliminarCurso(c.id)}>
+                        Eliminar
+                      </button>
+                    </td>
+                  )}
                 </tr>
-              ))}
+              ))
+            }
           </tbody>
         </table>
       </div>

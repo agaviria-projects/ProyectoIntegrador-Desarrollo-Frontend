@@ -13,6 +13,9 @@ function Profesores() {
     email: "",
   });
 
+  const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
+  const username = localStorage.getItem("userName") || "";
+
   const cargarProfesorParaEditar = (profesor) => {
     setNuevo(profesor);
   };
@@ -20,8 +23,14 @@ function Profesores() {
   const cargarProfesores = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/profesores/dto");
-      console.log("Profesores cargados(DTO):", res.data);
-      setProfesores(Array.isArray(res.data) ? res.data : []);
+      const datos = Array.isArray(res.data) ? res.data : [];
+
+      if (rol === "PROFESOR") {
+        const profesorFiltrado = datos.find(p => p.email === username);
+        setProfesores(profesorFiltrado ? [profesorFiltrado] : []);
+      } else {
+        setProfesores(datos);
+      }
     } catch (error) {
       console.error("Error cargando profesores:", error);
     }
@@ -39,7 +48,7 @@ function Profesores() {
     e.preventDefault();
     try {
       await axios.post("http://localhost:8080/api/profesores", nuevo);
-      cargarProfesores(); // Recargar lista
+      cargarProfesores();
       setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
     } catch (error) {
       console.error("Error guardando profesor:", error);
@@ -80,32 +89,34 @@ function Profesores() {
 
       <h2>👨‍🏫 Gestión de Profesores</h2>
 
-      <form onSubmit={guardarProfesor} className="estudiante-form">
-        <input
-          name="nombre"
-          placeholder="Nombre"
-          value={nuevo.nombre}
-          onChange={manejarCambio}
-          required
-        />
-        <input
-          name="especialidad"
-          placeholder="Especialidad"
-          value={nuevo.especialidad}
-          onChange={manejarCambio}
-          required
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          value={nuevo.email}
-          onChange={manejarCambio}
-          required
-        />
-        <button type="submit" className="guardar-btn">
-          Guardar
-        </button>
-      </form>
+      {rol === "ADMIN" && (
+        <form onSubmit={guardarProfesor} className="estudiante-form">
+          <input
+            name="nombre"
+            placeholder="Nombre"
+            value={nuevo.nombre}
+            onChange={manejarCambio}
+            required
+          />
+          <input
+            name="especialidad"
+            placeholder="Especialidad"
+            value={nuevo.especialidad}
+            onChange={manejarCambio}
+            required
+          />
+          <input
+            name="email"
+            placeholder="Email"
+            value={nuevo.email}
+            onChange={manejarCambio}
+            required
+          />
+          <button type="submit" className="guardar-btn">
+            Guardar
+          </button>
+        </form>
+      )}
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -125,7 +136,7 @@ function Profesores() {
               <th>Nombre</th>
               <th>Especialidad</th>
               <th>Email</th>
-              <th>Acciones</th>
+              {rol === "ADMIN" && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -141,14 +152,16 @@ function Profesores() {
                     <td>{p.nombre}</td>
                     <td>{p.especialidad}</td>
                     <td>{p.email}</td>
-                    <td>
-                      <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>
-                        Editar
-                      </button>
-                      <button className="eliminar-btn" onClick={() => eliminarProfesor(p.id)}>
-                        Eliminar
-                      </button>
-                    </td>
+                    {rol === "ADMIN" && (
+                      <td>
+                        <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>
+                          Editar
+                        </button>
+                        <button className="eliminar-btn" onClick={() => eliminarProfesor(p.id)}>
+                          Eliminar
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
           </tbody>

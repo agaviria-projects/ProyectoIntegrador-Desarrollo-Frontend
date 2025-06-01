@@ -14,16 +14,26 @@ function Matriculas() {
     fechaMatricula: "",
   });
 
+  const rol = localStorage.getItem("rol")?.toUpperCase();
+  const userName = localStorage.getItem("userName");
+
   useEffect(() => {
     cargarMatriculas();
-    cargarEstudiantes();
+    if (rol === "ADMIN") cargarEstudiantes();
     cargarCursos();
   }, []);
 
   const cargarMatriculas = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/matriculas");
-      setMatriculas(Array.isArray(res.data) ? res.data : []);
+      const todas = Array.isArray(res.data) ? res.data : [];
+      let filtradas = todas;
+
+      if (rol === "ESTUDIANTE") {
+        filtradas = todas.filter(m => m.emailEstudiante === userName);
+      }
+
+      setMatriculas(filtradas);
     } catch (error) {
       console.error("Error al cargar matrículas:", error);
     }
@@ -35,8 +45,12 @@ function Matriculas() {
   };
 
   const cargarCursos = async () => {
-    const res = await axios.get("http://localhost:8080/api/cursos");
-    setCursos(res.data || []);
+    try {
+      const res = await axios.get("http://localhost:8080/api/cursos/dto");
+      setCursos(res.data || []);
+    } catch (error) {
+      console.error("Error al cargar cursos:", error);
+    }
   };
 
   const manejarCambio = (e) => {
@@ -53,11 +67,7 @@ function Matriculas() {
         fechaMatricula: nueva.fechaMatricula,
       };
       await axios.post("http://localhost:8080/api/matriculas", data);
-      setNueva({
-        estudianteId: "",
-        cursoId: "",
-        fechaMatricula: "",
-      });
+      setNueva({ estudianteId: "", cursoId: "", fechaMatricula: "" });
       cargarMatriculas();
     } catch (error) {
       console.error("Error al guardar matrícula:", error);
@@ -93,31 +103,33 @@ function Matriculas() {
 
       <h2>📓 Gestión de Matrículas</h2>
 
-      <form onSubmit={guardarMatricula} className="matricula-form">
-        <select name="estudianteId" value={nueva.estudianteId} onChange={manejarCambio} required>
-          <option value="">Selecciona estudiante</option>
-          {estudiantes.map((e) => (
-            <option key={e.id} value={e.id}>{e.nombre} {e.apellido}</option>
-          ))}
-        </select>
+      {rol === "ADMIN" && (
+        <form onSubmit={guardarMatricula} className="matricula-form">
+          <select name="estudianteId" value={nueva.estudianteId} onChange={manejarCambio} required>
+            <option value="">Selecciona estudiante</option>
+            {estudiantes.map((e) => (
+              <option key={e.id} value={e.id}>{e.nombre} {e.apellido}</option>
+            ))}
+          </select>
 
-        <select name="cursoId" value={nueva.cursoId} onChange={manejarCambio} required>
-          <option value="">Selecciona curso</option>
-          {cursos.map((c) => (
-            <option key={c.id} value={c.id}>{c.nombre}</option>
-          ))}
-        </select>
+          <select name="cursoId" value={nueva.cursoId} onChange={manejarCambio} required>
+            <option value="">Selecciona curso</option>
+            {cursos.map((c) => (
+              <option key={c.id} value={c.id}>{c.nombre}</option>
+            ))}
+          </select>
 
-        <input
-          type="date"
-          name="fechaMatricula"
-          value={nueva.fechaMatricula}
-          onChange={manejarCambio}
-          required
-        />
+          <input
+            type="date"
+            name="fechaMatricula"
+            value={nueva.fechaMatricula}
+            onChange={manejarCambio}
+            required
+          />
 
-        <button type="submit" className="guardar-btn">Guardar</button>
-      </form>
+          <button type="submit" className="guardar-btn">Guardar</button>
+        </form>
+      )}
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -137,7 +149,7 @@ function Matriculas() {
               <th>Estudiante</th>
               <th>Curso</th>
               <th>Fecha Matrícula</th>
-              <th>Acciones</th>
+              {rol === "ADMIN" && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -151,11 +163,13 @@ function Matriculas() {
                   <td>{m.nombreEstudiante} {m.apellidoEstudiante}</td>
                   <td>{m.nombreCurso}</td>
                   <td>{m.fechaMatricula}</td>
-                  <td>
-                    <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
-                      Eliminar
-                    </button>
-                  </td>
+                  {rol === "ADMIN" && (
+                    <td>
+                      <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
+                        Eliminar
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
           </tbody>

@@ -8,6 +8,8 @@ function Notas() {
   const [notas, setNotas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [cursos, setCursos] = useState([]);
+  const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
+  const username = localStorage.getItem("userName") || "";
 
   const [nuevaNota, setNuevaNota] = useState({
     id: null,
@@ -19,7 +21,13 @@ function Notas() {
 
   const cargarNotas = async () => {
     const res = await axios.get("http://localhost:8080/api/notas/dto");
-    setNotas(Array.isArray(res.data) ? res.data : []);
+    const datos = Array.isArray(res.data) ? res.data : [];
+
+    if (rol === "ESTUDIANTE") {
+      setNotas(datos.filter(n => n.emailEstudiante === username));
+    } else {
+      setNotas(datos);
+    }
   };
 
   const cargarEstudiantes = async () => {
@@ -27,16 +35,28 @@ function Notas() {
     setEstudiantes(res.data);
   };
 
-  const cargarCursos = async () => {
-    const res = await axios.get("http://localhost:8080/api/cursos");
-    setCursos(res.data);
+  const cargarCursosPorEstudiante = async (estudianteId) => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/matriculas/estudiante/${estudianteId}/cursos`);
+      setCursos(res.data || []);
+    } catch (error) {
+      console.error("Error cargando cursos del estudiante:", error);
+      setCursos([]);
+    }
   };
 
   useEffect(() => {
     cargarNotas();
     cargarEstudiantes();
-    cargarCursos();
   }, []);
+
+  useEffect(() => {
+    if (nuevaNota.estudianteId) {
+      cargarCursosPorEstudiante(nuevaNota.estudianteId);
+    } else {
+      setCursos([]);
+    }
+  }, [nuevaNota.estudianteId]);
 
   const manejarCambio = (e) => {
     setNuevaNota({ ...nuevaNota, [e.target.name]: e.target.value });
@@ -113,68 +133,70 @@ function Notas() {
       <div style={{ flex: 1 }}>
         <h2>📝 Gestión de Notas</h2>
 
-        <form onSubmit={guardarNota} className="estudiante-form">
-          <input
-            name="nota"
-            type="number"
-            step="0.1"
-            min="1"
-            max="5"
-            placeholder="Nota (ej.4.5)"
-            value={nuevaNota.nota}
-            onChange={e => {
-              const valor = e.target.value.replace(',', '.');
-              setNuevaNota({ ...nuevaNota, nota: valor });
-            }}
-            required
-          />
-          <input
-            name="fechaNota"
-            type="date"
-            placeholder="Fecha de Nota"
-            value={nuevaNota.fechaNota}
-            onChange={manejarCambio}
-            required
-          />
-          <select
-            name="estudianteId"
-            value={nuevaNota.estudianteId}
-            onChange={manejarCambio}
-            required
-          >
-            <option value="">Seleccione Estudiante</option>
-            {estudiantes.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.nombre} {e.apellido}
-              </option>
-            ))}
-          </select>
+        {rol !== "ESTUDIANTE" && (
+          <form onSubmit={guardarNota} className="estudiante-form">
+            <input
+              name="nota"
+              type="number"
+              step="0.1"
+              min="1"
+              max="5"
+              placeholder="Nota (ej.4.5)"
+              value={nuevaNota.nota}
+              onChange={e => {
+                const valor = e.target.value.replace(',', '.');
+                setNuevaNota({ ...nuevaNota, nota: valor });
+              }}
+              required
+            />
+            <input
+              name="fechaNota"
+              type="date"
+              placeholder="Fecha de Nota"
+              value={nuevaNota.fechaNota}
+              onChange={manejarCambio}
+              required
+            />
+            <select
+              name="estudianteId"
+              value={nuevaNota.estudianteId}
+              onChange={manejarCambio}
+              required
+            >
+              <option value="">Seleccione Estudiante</option>
+              {estudiantes.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.nombre} {e.apellido}
+                </option>
+              ))}
+            </select>
 
-          <select
-            name="cursoId"
-            value={nuevaNota.cursoId}
-            onChange={manejarCambio}
-            required
-          >
-            <option value="">Seleccione Curso</option>
-            {cursos.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}
-              </option>
-            ))}
-          </select>
+            <select
+              name="cursoId"
+              value={nuevaNota.cursoId}
+              onChange={manejarCambio}
+              required
+            >
+              <option value="">Seleccione Curso</option>
+              {cursos.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
 
-          <button type="submit" className="guardar-btn">
-            Guardar
-          </button>
-        </form>
+            <button type="submit" className="guardar-btn">
+              Guardar
+            </button>
+          </form>
+        )}
       </div>
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
         <input
           type="text"
-          placeholder="Buscar por nota"
+          placeholder="Buscar por estudiante"
           value={filtro}
           onChange={(e) => setFiltro(e.target.value.toLowerCase())}
           className="buscador-input"
@@ -189,32 +211,34 @@ function Notas() {
               <th>Fecha</th>
               <th>Estudiante</th>
               <th>Curso</th>
-              <th>Acciones</th>
+              {rol !== "ESTUDIANTE" && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
             {notas
-              .filter(n => n.nota.toString().includes(filtro))
+              .filter(n =>  `${n.nombreEstudiante} ${n.apellidoEstudiante}`.toLowerCase().includes(filtro))
               .map((n) => (
                 <tr key={n.id}>
                   <td>{n.nota}</td>
                   <td>{n.fechaNota}</td>
                   <td>{n.nombreEstudiante} {n.apellidoEstudiante}</td>
                   <td>{n.nombreCurso}</td>
-                  <td>
-                    <button
-                      className="editar-btn"
-                      onClick={() => cargarNotaParaEditar(n)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="eliminar-btn"
-                      onClick={() => eliminarNota(n.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+                  {rol !== "ESTUDIANTE" && (
+                    <td>
+                      <button
+                        className="editar-btn"
+                        onClick={() => cargarNotaParaEditar(n)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="eliminar-btn"
+                        onClick={() => eliminarNota(n.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
           </tbody>
