@@ -20,15 +20,23 @@ function Notas() {
   });
 
   const cargarNotas = async () => {
-    const res = await axios.get("http://localhost:8080/api/notas/dto");
-    const datos = Array.isArray(res.data) ? res.data : [];
+  try {
+    let url = "http://localhost:8080/api/notas/dto";
+    const userId = localStorage.getItem("userId");
 
-    if (rol === "ESTUDIANTE") {
-      setNotas(datos.filter(n => n.emailEstudiante === username));
-    } else {
-      setNotas(datos);
-    }
-  };
+   if (rol === "PROFESOR") {
+    const profesorId = localStorage.getItem("profesorId");
+    url += `?profesorId=${profesorId}`;
+  }
+
+    const res = await axios.get(url);
+    const datos = Array.isArray(res.data) ? res.data : [];
+    setNotas(datos);
+  } catch (error) {
+    console.error("Error al cargar notas:", error);
+  }
+};
+
 
   const cargarEstudiantes = async () => {
     const res = await axios.get("http://localhost:8080/api/estudiantes");

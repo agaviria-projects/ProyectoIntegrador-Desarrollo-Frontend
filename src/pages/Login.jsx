@@ -22,8 +22,16 @@ function Login() {
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("userName", user.nombreUsuario);
       localStorage.setItem("rol", user.rol);
+      localStorage.setItem("correo", user.correo); // 👈 este es el que usarás en Profesores.jsx
+
+      
+
+      // Guardar profesorId si viene
+       if (user.profesorId) {
+         localStorage.setItem("profesorId", user.profesorId); // 🔥 Este valor es clave
+      }
       navigate("/dashboard");
-    } else {
+        } else {
       setError("Usuario o contraseña incorrectos");
     }
   };

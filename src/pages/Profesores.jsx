@@ -14,7 +14,9 @@ function Profesores() {
   });
 
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
-  const username = localStorage.getItem("userName") || "";
+  const email = localStorage.getItem("correo") || "";
+
+
 
   const cargarProfesorParaEditar = (profesor) => {
     setNuevo(profesor);
@@ -25,9 +27,16 @@ function Profesores() {
       const res = await axios.get("http://localhost:8080/api/profesores/dto");
       const datos = Array.isArray(res.data) ? res.data : [];
 
+      console.log("📧 Email backend original:", datos.map(p => p.email));
+      console.log("📧 Email desde localStorage:",email);
       if (rol === "PROFESOR") {
-        const profesorFiltrado = datos.find(p => p.email === username);
+        const profesorFiltrado = datos.find(p => {
+          const backendEmail = (p.email || "").replace(/"/g, "").trim().toLowerCase();
+          const localEmail = (email || "").trim().toLowerCase();
+          return backendEmail === localEmail;
+        });
         setProfesores(profesorFiltrado ? [profesorFiltrado] : []);
+    
       } else {
         setProfesores(datos);
       }

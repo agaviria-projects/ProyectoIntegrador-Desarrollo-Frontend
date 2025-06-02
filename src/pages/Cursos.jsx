@@ -17,24 +17,29 @@ function Cursos() {
   const userName = localStorage.getItem("userName");
 
   const cargarCursos = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/cursos/dto");
-      const todosLosCursos = Array.isArray(res.data) ? res.data : [];
-      let cursosFiltrados = todosLosCursos;
+  try {
+    const res = await axios.get("http://localhost:8080/api/cursos/dto");
+    const todosLosCursos = Array.isArray(res.data) ? res.data : [];
 
-      if (rol === "PROFESOR") {
-        cursosFiltrados = todosLosCursos.filter(c => c.emailProfesor === userName);
-      } else if (rol === "ESTUDIANTE") {
-        cursosFiltrados = todosLosCursos.filter(c =>
-          c.estudiantes?.some(e => e.email === userName)
-        );
-      }
+    let cursosFiltrados = todosLosCursos;
+    const rol = localStorage.getItem("rol")?.toUpperCase();
+    const profesorId = parseInt(localStorage.getItem("profesorId")); // ← ¡Aquí está el truco!
+    const userName = localStorage.getItem("userName");
 
-      setCursos(cursosFiltrados);
-    } catch (error) {
-      console.error("Error cargando cursos:", error);
+    if (rol === "PROFESOR") {
+      cursosFiltrados = todosLosCursos.filter(c => c.profesorId === profesorId);
+    } else if (rol === "ESTUDIANTE") {
+      cursosFiltrados = todosLosCursos.filter(c =>
+        c.estudiantes?.some(e => e.email === userName)
+      );
     }
-  };
+
+    setCursos(cursosFiltrados);
+  } catch (error) {
+    console.error("Error cargando cursos:", error);
+  }
+};
+
 
   useEffect(() => {
     cargarCursos();
