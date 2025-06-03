@@ -36,13 +36,14 @@ function Matriculas() {
         res = await axios.get(`http://localhost:8080/api/matriculas/estudiante/${estudianteId}`);
         const data = res.data.map((m) => ({
           id: m.id,
-          nombreEstudiante: `${m.estudiante.nombre} ${m.estudiante.apellido}`,
+          nombreEstudiante: `${m.estudiante.nombre}`,
+          apellidoEstudiante: `${m.estudiante.apellido}`,
           nombreCurso: m.curso.nombre,
           fechaMatricula: m.fechaMatricula
         }));
         setMatriculas(data);
       } else {
-        res = await axios.get("http://localhost:8080/api/matriculas/dto");
+        res = await axios.get("http://localhost:8080/api/matriculas");
         setMatriculas(res.data || []);
       }
 
@@ -167,24 +168,37 @@ function Matriculas() {
           <tbody>
             {matriculas
               .filter((m) =>
-                m.nombreEstudiante.toLowerCase().includes(filtro) ||
+                `${m.nombreEstudiante} ${m.apellidoEstudiante || ""}`.toLowerCase().includes(filtro) ||
                 m.nombreCurso.toLowerCase().includes(filtro)
               )
               .map((m) => (
                 <tr key={m.id}>
-                  <td>{m.nombreEstudiante}</td>
+                  <td>{m.nombreEstudiante} {m.apellidoEstudiante}</td>
                   <td>{m.nombreCurso}</td>
                   <td>{m.fechaMatricula}</td>
                   {rol === "ADMIN" && (
                     <td>
-                      <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
-                        Eliminar
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-          </tbody>
+                     <button
+                          className="editar-btn"
+                          onClick={() =>
+                            setNueva({
+                              estudianteId: estudiantes.find(e => `${e.nombre} ${e.apellido}` === m.nombreEstudiante)?.id || "",
+                              cursoId: cursos.find(c => c.nombre === m.nombreCurso)?.id || "",
+                              fechaMatricula: m.fechaMatricula,
+                              id: m.id
+                            })
+                          }
+                        >
+                          Editar
+                        </button>
+                        <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
+                          Eliminar
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+            </tbody>
         </table>
       </div>
 
