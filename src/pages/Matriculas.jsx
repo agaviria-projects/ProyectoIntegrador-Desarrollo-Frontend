@@ -15,7 +15,7 @@ function Matriculas() {
   });
 
   const rol = localStorage.getItem("rol")?.toUpperCase();
-  const userName = localStorage.getItem("userName");
+  const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
 
   useEffect(() => {
     cargarMatriculas();
@@ -25,15 +25,27 @@ function Matriculas() {
 
   const cargarMatriculas = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/matriculas");
-      const todas = Array.isArray(res.data) ? res.data : [];
-      let filtradas = todas;
+      let res;
 
       if (rol === "ESTUDIANTE") {
-        filtradas = todas.filter(m => m.emailEstudiante === userName);
+        if (!estudianteId) {
+          console.warn("ID del estudiante no válido");
+          return;
+        }
+
+        res = await axios.get(`http://localhost:8080/api/matriculas/estudiante/${estudianteId}`);
+        const data = res.data.map((m) => ({
+          id: m.id,
+          nombreEstudiante: `${m.estudiante.nombre} ${m.estudiante.apellido}`,
+          nombreCurso: m.curso.nombre,
+          fechaMatricula: m.fechaMatricula
+        }));
+        setMatriculas(data);
+      } else {
+        res = await axios.get("http://localhost:8080/api/matriculas/dto");
+        setMatriculas(res.data || []);
       }
 
-      setMatriculas(filtradas);
     } catch (error) {
       console.error("Error al cargar matrículas:", error);
     }
@@ -160,7 +172,7 @@ function Matriculas() {
               )
               .map((m) => (
                 <tr key={m.id}>
-                  <td>{m.nombreEstudiante} {m.apellidoEstudiante}</td>
+                  <td>{m.nombreEstudiante}</td>
                   <td>{m.nombreCurso}</td>
                   <td>{m.fechaMatricula}</td>
                   {rol === "ADMIN" && (
