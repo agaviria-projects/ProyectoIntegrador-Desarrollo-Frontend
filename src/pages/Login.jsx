@@ -28,8 +28,13 @@ function Login() {
 
       // Guardar profesorId si viene
        if (user.profesorId) {
-         localStorage.setItem("profesorId", user.profesorId); // 🔥 Este valor es clave
+        localStorage.setItem("profesorId", user.profesorId);
       }
+
+      if (user.estudianteId) {
+        localStorage.setItem("estudiante_id", user.estudianteId);
+      }
+
       navigate("/dashboard");
         } else {
       setError("Usuario o contraseña incorrectos");

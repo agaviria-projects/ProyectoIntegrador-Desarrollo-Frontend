@@ -14,32 +14,47 @@ function Cursos() {
   });
 
   const rol = localStorage.getItem("rol")?.toUpperCase();
+  const correo = localStorage.getItem("correo");
   const userName = localStorage.getItem("userName");
+  const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
+  const profesorId = parseInt(localStorage.getItem("profesorId"));
 
   const cargarCursos = async () => {
-  try {
-    const res = await axios.get("http://localhost:8080/api/cursos/dto");
-    const todosLosCursos = Array.isArray(res.data) ? res.data : [];
+    try {
+      let cursosFiltrados = [];
 
-    let cursosFiltrados = todosLosCursos;
-    const rol = localStorage.getItem("rol")?.toUpperCase();
-    const profesorId = parseInt(localStorage.getItem("profesorId")); // ← ¡Aquí está el truco!
-    const userName = localStorage.getItem("userName");
+      if (rol === "PROFESOR") {
+        // 🔵 Mostrar cursos del profesor logueado
+        const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
+        const todos = Array.isArray(resCursos.data) ? resCursos.data : [];
+        cursosFiltrados = todos.filter(c => c.profesorId === profesorId);
 
-    if (rol === "PROFESOR") {
-      cursosFiltrados = todosLosCursos.filter(c => c.profesorId === profesorId);
-    } else if (rol === "ESTUDIANTE") {
-      cursosFiltrados = todosLosCursos.filter(c =>
-        c.estudiantes?.some(e => e.email === userName)
-      );
+      } else if (rol === "ESTUDIANTE") {
+        // 🟢 Mostrar solo los cursos donde está matriculado
+        if (isNaN(estudianteId) || estudianteId === 0) {
+          console.warn("ID del estudiante no válido en localStorage");
+          return;
+        }
+
+        const resMatriculas = await axios.get(`http://localhost:8080/api/matriculas/estudiante/${estudianteId}`);
+        cursosFiltrados = resMatriculas.data.map(m => ({
+          id: m.curso.id,
+          nombre: m.curso.nombre,
+          descripcion: m.curso.descripcion,
+          nombreProfesor: m.curso.profesor?.nombre || "Sin profesor"
+        }));
+
+      } else {
+        // 🔴 ADMIN ve todos los cursos
+        const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
+        cursosFiltrados = Array.isArray(resCursos.data) ? resCursos.data : [];
+      }
+
+      setCursos(cursosFiltrados);
+    } catch (error) {
+      console.error("Error cargando cursos:", error);
     }
-
-    setCursos(cursosFiltrados);
-  } catch (error) {
-    console.error("Error cargando cursos:", error);
-  }
-};
-
+  };
 
   useEffect(() => {
     cargarCursos();
