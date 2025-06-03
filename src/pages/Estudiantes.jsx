@@ -16,17 +16,13 @@ function Estudiantes() {
   });
 
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
-  const username = localStorage.getItem("userName") || "";
-
-  const cargarEstudianteParaEditar = (estudiante) => {
-    setNuevo(estudiante);
-  };
+  const correo = localStorage.getItem("correo") || "";
 
   const cargarEstudiantes = async () => {
     const res = await axios.get("http://localhost:8080/api/estudiantes");
     const datos = Array.isArray(res.data) ? res.data : [];
     if (rol === "ESTUDIANTE") {
-      const estudianteFiltrado = datos.find(e => e.email === username);
+      const estudianteFiltrado = datos.find(e => e.email === correo);
       setEstudiantes(estudianteFiltrado ? [estudianteFiltrado] : []);
     } else {
       setEstudiantes(datos);
@@ -146,6 +142,7 @@ function Estudiantes() {
               <th>Nombre</th>
               <th>Apellido</th>
               <th>Email</th>
+              {rol === "ESTUDIANTE" && <th>Faltas</th>}
               {rol !== "ESTUDIANTE" && <th>Acciones</th>}
             </tr>
           </thead>
@@ -154,7 +151,7 @@ function Estudiantes() {
               estudiantes
                 .filter(
                   (e) =>
-                    e.cedula.toLowerCase().includes(filtro) ||
+                    e.cedula.toString().toLowerCase().includes(filtro) ||
                     e.nombre.toLowerCase().includes(filtro)
                 )
                 .map((e) => (
@@ -163,6 +160,7 @@ function Estudiantes() {
                     <td>{e.nombre}</td>
                     <td>{e.apellido}</td>
                     <td>{e.email}</td>
+                    {rol === "ESTUDIANTE" && <td>{e.cantidadFaltas}</td>}
                     {rol !== "ESTUDIANTE" && (
                       <td>
                         <button
@@ -182,6 +180,15 @@ function Estudiantes() {
                   </tr>
                 ))}
           </tbody>
+          {estudiantes.length === 0 && (
+            <tfoot>
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  No hay registros para mostrar.
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 
