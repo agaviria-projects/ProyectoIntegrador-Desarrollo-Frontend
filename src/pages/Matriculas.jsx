@@ -9,6 +9,7 @@ function Matriculas() {
   const [estudiantes, setEstudiantes] = useState([]);
   const [cursos, setCursos] = useState([]);
   const [nueva, setNueva] = useState({
+    id: null,
     estudianteId: "",
     cursoId: "",
     fechaMatricula: "",
@@ -36,8 +37,8 @@ function Matriculas() {
         res = await axios.get(`http://localhost:8080/api/matriculas/estudiante/${estudianteId}`);
         const data = res.data.map((m) => ({
           id: m.id,
-          nombreEstudiante: `${m.estudiante.nombre}`,
-          apellidoEstudiante: `${m.estudiante.apellido}`,
+          nombreEstudiante: m.estudiante.nombre,
+          apellidoEstudiante: m.estudiante.apellido,
           nombreCurso: m.curso.nombre,
           fechaMatricula: m.fechaMatricula
         }));
@@ -46,7 +47,6 @@ function Matriculas() {
         res = await axios.get("http://localhost:8080/api/matriculas");
         setMatriculas(res.data || []);
       }
-
     } catch (error) {
       console.error("Error al cargar matrículas:", error);
     }
@@ -79,8 +79,14 @@ function Matriculas() {
         curso: { id: parseInt(nueva.cursoId) },
         fechaMatricula: nueva.fechaMatricula,
       };
-      await axios.post("http://localhost:8080/api/matriculas", data);
-      setNueva({ estudianteId: "", cursoId: "", fechaMatricula: "" });
+
+      if (nueva.id) {
+        await axios.put(`http://localhost:8080/api/matriculas/${nueva.id}`, data);
+      } else {
+        await axios.post("http://localhost:8080/api/matriculas", data);
+      }
+
+      setNueva({ id: null, estudianteId: "", cursoId: "", fechaMatricula: "" });
       cargarMatriculas();
     } catch (error) {
       console.error("Error al guardar matrícula:", error);
@@ -140,7 +146,9 @@ function Matriculas() {
             required
           />
 
-          <button type="submit" className="guardar-btn">Guardar</button>
+          <button type="submit" className="guardar-btn">
+            {nueva.id ? "Actualizar" : "Guardar"}
+          </button>
         </form>
       )}
 
@@ -178,27 +186,27 @@ function Matriculas() {
                   <td>{m.fechaMatricula}</td>
                   {rol === "ADMIN" && (
                     <td>
-                     <button
-                          className="editar-btn"
-                          onClick={() =>
-                            setNueva({
-                              estudianteId: estudiantes.find(e => `${e.nombre} ${e.apellido}` === m.nombreEstudiante)?.id || "",
-                              cursoId: cursos.find(c => c.nombre === m.nombreCurso)?.id || "",
-                              fechaMatricula: m.fechaMatricula,
-                              id: m.id
-                            })
-                          }
-                        >
-                          Editar
-                        </button>
-                        <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
-                          Eliminar
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-            </tbody>
+                      <button
+                        className="editar-btn"
+                        onClick={() =>
+                          setNueva({
+                            id: m.id,
+                            estudianteId: estudiantes.find(e => `${e.nombre} ${e.apellido}` === `${m.nombreEstudiante} ${m.apellidoEstudiante}`)?.id || "",
+                            cursoId: cursos.find(c => c.nombre === m.nombreCurso)?.id || "",
+                            fechaMatricula: m.fechaMatricula,
+                          })
+                        }
+                      >
+                        Editar
+                      </button>
+                      <button className="eliminar-btn" onClick={() => eliminarMatricula(m.id)}>
+                        Eliminar
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+          </tbody>
         </table>
       </div>
 
