@@ -8,8 +8,9 @@ function Notas() {
   const [notas, setNotas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [cursos, setCursos] = useState([]);
+
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
-  const username = localStorage.getItem("userName") || "";
+  const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
 
   const [nuevaNota, setNuevaNota] = useState({
     id: null,
@@ -20,23 +21,27 @@ function Notas() {
   });
 
   const cargarNotas = async () => {
-  try {
-    let url = "http://localhost:8080/api/notas/dto";
-    const userId = localStorage.getItem("userId");
+    try {
+      let url = "http://localhost:8080/api/notas/dto";
 
-   if (rol === "PROFESOR") {
-    const profesorId = localStorage.getItem("profesorId");
-    url += `?profesorId=${profesorId}`;
-  }
+      if (rol === "ESTUDIANTE") {
+        if (!estudianteId) {
+          console.warn("ID de estudiante inválido");
+          return;
+        }
+        url += `?estudianteId=${estudianteId}`;
+      } else if (rol === "PROFESOR") {
+        const profesorId = localStorage.getItem("profesorId");
+        url += `?profesorId=${profesorId}`;
+      }
 
-    const res = await axios.get(url);
-    const datos = Array.isArray(res.data) ? res.data : [];
-    setNotas(datos);
-  } catch (error) {
-    console.error("Error al cargar notas:", error);
-  }
-};
-
+      const res = await axios.get(url);
+      const datos = Array.isArray(res.data) ? res.data : [];
+      setNotas(datos);
+    } catch (error) {
+      console.error("Error al cargar notas:", error);
+    }
+  };
 
   const cargarEstudiantes = async () => {
     const res = await axios.get("http://localhost:8080/api/estudiantes");
@@ -55,7 +60,7 @@ function Notas() {
 
   useEffect(() => {
     cargarNotas();
-    cargarEstudiantes();
+    if (rol !== "ESTUDIANTE") cargarEstudiantes();
   }, []);
 
   useEffect(() => {
@@ -138,67 +143,64 @@ function Notas() {
         <img src={logo} alt="Logo institucional" style={{ width: "80px" }} />
       </div>
 
-      <div style={{ flex: 1 }}>
-        <h2>📝 Gestión de Notas</h2>
+      <h2>📝 Gestión de Notas</h2>
 
-        {rol !== "ESTUDIANTE" && (
-          <form onSubmit={guardarNota} className="estudiante-form">
-            <input
-              name="nota"
-              type="number"
-              step="0.1"
-              min="1"
-              max="5"
-              placeholder="Nota (ej.4.5)"
-              value={nuevaNota.nota}
-              onChange={e => {
-                const valor = e.target.value.replace(',', '.');
-                setNuevaNota({ ...nuevaNota, nota: valor });
-              }}
-              required
-            />
-            <input
-              name="fechaNota"
-              type="date"
-              placeholder="Fecha de Nota"
-              value={nuevaNota.fechaNota}
-              onChange={manejarCambio}
-              required
-            />
-            <select
-              name="estudianteId"
-              value={nuevaNota.estudianteId}
-              onChange={manejarCambio}
-              required
-            >
-              <option value="">Seleccione Estudiante</option>
-              {estudiantes.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.nombre} {e.apellido}
-                </option>
-              ))}
-            </select>
+      {rol !== "ESTUDIANTE" && (
+        <form onSubmit={guardarNota} className="estudiante-form">
+          <input
+            name="nota"
+            type="number"
+            step="0.1"
+            min="1"
+            max="5"
+            placeholder="Nota (ej. 4.5)"
+            value={nuevaNota.nota}
+            onChange={(e) =>
+              setNuevaNota({ ...nuevaNota, nota: e.target.value.replace(",", ".") })
+            }
+            required
+          />
+          <input
+            name="fechaNota"
+            type="date"
+            placeholder="Fecha"
+            value={nuevaNota.fechaNota}
+            onChange={manejarCambio}
+            required
+          />
+          <select
+            name="estudianteId"
+            value={nuevaNota.estudianteId}
+            onChange={manejarCambio}
+            required
+          >
+            <option value="">Seleccione Estudiante</option>
+            {estudiantes.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.nombre} {e.apellido}
+              </option>
+            ))}
+          </select>
 
-            <select
-              name="cursoId"
-              value={nuevaNota.cursoId}
-              onChange={manejarCambio}
-              required
-            >
-              <option value="">Seleccione Curso</option>
-              {cursos.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+          <select
+            name="cursoId"
+            value={nuevaNota.cursoId}
+            onChange={manejarCambio}
+            required
+          >
+            <option value="">Seleccione Curso</option>
+            {cursos.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
 
-            <button type="submit" className="guardar-btn">
-              Guardar
-            </button>
-          </form>
-        )}
-      </div>
+          <button type="submit" className="guardar-btn">
+            Guardar
+          </button>
+        </form>
+      )}
 
       <div className="buscador-wrapper">
         <span className="icono-lupa">🔍</span>
@@ -224,12 +226,18 @@ function Notas() {
           </thead>
           <tbody>
             {notas
-              .filter(n =>  `${n.nombreEstudiante} ${n.apellidoEstudiante}`.toLowerCase().includes(filtro))
+              .filter((n) =>
+                `${n.nombreEstudiante} ${n.apellidoEstudiante}`
+                  .toLowerCase()
+                  .includes(filtro)
+              )
               .map((n) => (
                 <tr key={n.id}>
                   <td>{n.nota}</td>
                   <td>{n.fechaNota}</td>
-                  <td>{n.nombreEstudiante} {n.apellidoEstudiante}</td>
+                  <td>
+                    {n.nombreEstudiante} {n.apellidoEstudiante}
+                  </td>
                   <td>{n.nombreCurso}</td>
                   {rol !== "ESTUDIANTE" && (
                     <td>
