@@ -29,17 +29,20 @@ function Profesores() {
 
       console.log("📧 Email backend original:", datos.map(p => p.email));
       console.log("📧 Email desde localStorage:",email);
-      if (rol === "PROFESOR") {
+    if (rol === "PROFESOR") {
         const profesorFiltrado = datos.find(p => {
           const backendEmail = (p.email || "").replace(/"/g, "").trim().toLowerCase();
           const localEmail = (email || "").trim().toLowerCase();
           return backendEmail === localEmail;
         });
-        setProfesores(profesorFiltrado ? [profesorFiltrado] : []);
-    
-      } else {
-        setProfesores(datos);
-      }
+
+        if (profesorFiltrado) {
+          localStorage.setItem("profesorId", profesorFiltrado.id); // ✅ AÑADE ESTA LÍNEA
+          setProfesores([profesorFiltrado]);
+        } else {
+          setProfesores([]);
+        }
+    }
     } catch (error) {
       console.error("Error cargando profesores:", error);
     }
