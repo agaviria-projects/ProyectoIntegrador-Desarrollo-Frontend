@@ -6,6 +6,7 @@ import logo from "../assets/logosinfondo.png";
 function Cursos() {
   const [filtro, setFiltro] = useState("");
   const [cursos, setCursos] = useState([]);
+  const [profesores, setProfesores] = useState([]);
   const [nuevo, setNuevo] = useState({
     id: null,
     nombre: "",
@@ -24,13 +25,11 @@ function Cursos() {
       let cursosFiltrados = [];
 
       if (rol === "PROFESOR") {
-        // 🔵 Mostrar cursos del profesor logueado
         const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
         const todos = Array.isArray(resCursos.data) ? resCursos.data : [];
         cursosFiltrados = todos.filter(c => c.profesorId === profesorId);
 
       } else if (rol === "ESTUDIANTE") {
-        // 🟢 Mostrar solo los cursos donde está matriculado
         if (isNaN(estudianteId) || estudianteId === 0) {
           console.warn("ID del estudiante no válido en localStorage");
           return;
@@ -45,7 +44,6 @@ function Cursos() {
         }));
 
       } else {
-        // 🔴 ADMIN ve todos los cursos
         const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
         cursosFiltrados = Array.isArray(resCursos.data) ? resCursos.data : [];
       }
@@ -56,8 +54,18 @@ function Cursos() {
     }
   };
 
+  const cargarProfesores = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/profesores/dto");
+      setProfesores(res.data || []);
+    } catch (error) {
+      console.error("Error al cargar profesores:", error);
+    }
+  };
+
   useEffect(() => {
     cargarCursos();
+    if (rol === "ADMIN") cargarProfesores();
   }, []);
 
   const manejarCambio = (e) => {
@@ -117,7 +125,17 @@ function Cursos() {
         <form onSubmit={guardarCurso} className="estudiante-form">
           <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
           <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
-          <input name="profesorId" placeholder="ID Profesor" value={nuevo.profesorId} onChange={manejarCambio} required />
+          <select
+            name="profesorId"
+            value={nuevo.profesorId}
+            onChange={manejarCambio}
+            required
+          >
+            <option value="">Seleccione un profesor</option>
+            {profesores.map((p) => (
+              <option key={p.id} value={p.id}>{p.nombre}</option>
+            ))}
+          </select>
           <button type="submit" className="guardar-btn">Guardar</button>
         </form>
       )}
