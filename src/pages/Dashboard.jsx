@@ -17,6 +17,7 @@ function Dashboard() {
   const [foto, setFoto] = useState(adminImg);
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const username = localStorage.getItem("userName") || "admin";
+  const correo = localStorage.getItem("correo") || "";
   const rolTexto = rol === "ADMIN" ? "Administrador" : rol === "PROFESOR" ? "Profesor" : "Estudiante";
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
@@ -67,6 +68,26 @@ function Dashboard() {
     window.location.href = "/";
   };
 
+  const exportarNotas = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/notas/exportar-notas", {
+        responseType: "blob",
+        headers: {
+          rol: rol,
+          correo: correo
+        }
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "notas.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error exportando notas:", error);
+    }
+  };
+
   const estiloOpcion = {
     padding: "8px 12px", fontSize: "14px", color: "#1e293b",
     cursor: "pointer", borderRadius: "6px", whiteSpace: "nowrap"
@@ -90,10 +111,13 @@ function Dashboard() {
       label: "Presentación técnica",
       action: () => window.open("https://gamma.app/docs/EducationSystem-Proyecto-Integrador-2025-41t14uwve25tsce?mode=present#card-pgwf57irix8rdtj", "_blank")
     },
-    { icon: <FaFileExcel size={22} color="#16a34a" />, label: "Exportar a Excel" }
+    {
+      icon: <FaFileExcel size={22} color="#16a34a" />,
+      label: "Exportar a Excel",
+      action: exportarNotas
+    }
   ];
-
-  return (
+   return (
     <div className="dashboard-container">
       <div className="sidebar">
         <img src={logo} alt="Logo" />
