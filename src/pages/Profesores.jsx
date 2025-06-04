@@ -54,15 +54,23 @@ function Profesores() {
   };
 
   const guardarProfesor = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:8080/api/profesores", nuevo);
-      cargarProfesores();
-      setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
-    } catch (error) {
-      console.error("Error guardando profesor:", error);
-    }
-  };
+      e.preventDefault();
+      try {
+        // Creamos un nuevo objeto excluyendo el campo id
+        const { nombre, especialidad, email } = nuevo;
+
+        await axios.post("http://localhost:8080/api/profesores", {
+          nombre,
+          especialidad,
+          email
+        });
+
+        cargarProfesores();
+        setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
+      } catch (error) {
+        console.error("Error guardando profesor:", error);
+      }
+    };
 
   const eliminarProfesor = async (id) => {
     try {
