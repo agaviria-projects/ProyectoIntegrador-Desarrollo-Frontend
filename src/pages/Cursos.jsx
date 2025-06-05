@@ -16,15 +16,36 @@ function Cursos() {
 
   const rol = localStorage.getItem("rol")?.toUpperCase();
   const correo = localStorage.getItem("correo");
-  const userName = localStorage.getItem("userName");
   const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
-  const profesorId = parseInt(localStorage.getItem("profesorId"));
+  const [profesorId, setProfesorId] = useState(parseInt(localStorage.getItem("profesorId") || "0"));
+  const [esperando, setEsperando] = useState(false);
+
+  const cargarProfesorId = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/profesores/dto");
+      const profesor = res.data.find(p => p.email === correo);
+      if (profesor) {
+        localStorage.setItem("profesorId", profesor.id);
+        setProfesorId(profesor.id);
+      }
+    } catch (error) {
+      console.error("Error obteniendo el profesor:", error);
+    }
+  };
 
   const cargarCursos = async () => {
     try {
       let cursosFiltrados = [];
 
       if (rol === "PROFESOR") {
+        if (!profesorId || isNaN(profesorId)) {
+          setEsperando(true);
+          console.warn("⏳ Esperando profesorId en localStorage...");
+          await cargarProfesorId();
+          setEsperando(false);
+          return;
+        }
+
         const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
         const todos = Array.isArray(resCursos.data) ? resCursos.data : [];
         cursosFiltrados = todos.filter(c => c.profesorId === profesorId);
@@ -64,10 +85,19 @@ function Cursos() {
   };
 
   useEffect(() => {
-    cargarCursos();
-    if (rol === "ADMIN") cargarProfesores();
-    
-  }, []);
+    if (rol === "ADMIN") {
+      cargarProfesores();
+      cargarCursos();
+    } else if (rol === "PROFESOR") {
+      if (!profesorId || isNaN(profesorId)) {
+        cargarProfesorId().then(() => cargarCursos());
+      } else {
+        cargarCursos();
+      }
+    } else {
+      cargarCursos();
+    }
+  }, [rol, profesorId]);
 
   const manejarCambio = (e) => {
     setNuevo({ ...nuevo, [e.target.name]: e.target.value });
@@ -96,6 +126,16 @@ function Cursos() {
       console.error("Error al eliminar curso:", error);
     }
   };
+
+  if (esperando) {
+    return (
+      <div className="estudiantes-container">
+        <div className="mensaje-cargando">
+          ⏳ Cargando datos del profesor...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="estudiantes-container">
@@ -126,12 +166,7 @@ function Cursos() {
         <form onSubmit={guardarCurso} className="estudiante-form">
           <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
           <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
-          <select
-            name="profesorId"
-            value={nuevo.profesorId}
-            onChange={manejarCambio}
-            required
-          >
+          <select name="profesorId" value={nuevo.profesorId} onChange={manejarCambio} required>
             <option value="">Seleccione un profesor</option>
             {profesores.map((p) => (
               <option key={p.id} value={p.id}>{p.nombre}</option>
