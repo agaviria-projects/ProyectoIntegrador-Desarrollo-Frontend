@@ -44,7 +44,7 @@ const cargarProfesores = async () => {
         setProfesores([]);
       }
     } else {
-      // ✅ Este bloque era el que faltaba
+
       setProfesores(datos);
     }
 
@@ -178,6 +178,7 @@ const cargarProfesores = async () => {
                     <td>{p.nombre}</td>
                     <td>{p.especialidad}</td>
                     <td>{p.email}</td>
+                    
                     {rol === "ADMIN" && (
                       <td>
                         <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>

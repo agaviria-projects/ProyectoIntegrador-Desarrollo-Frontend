@@ -265,6 +265,7 @@ function Dashboard() {
         <footer className="footer-institucional">
           <p>© 2025 EducationSystem | Instituto de Gestión Académica</p>
           <p>Versión 1.0.0</p>
+          <p>Héctor Alejandro Gaviria Marin</p>
         </footer>
       </div>
     </div>

@@ -21,6 +21,7 @@ function Estudiantes() {
   const cargarEstudiantes = async () => {
     const res = await axios.get("http://localhost:8080/api/estudiantes");
     const datos = Array.isArray(res.data) ? res.data : [];
+
     if (rol === "ESTUDIANTE") {
       const estudianteFiltrado = datos.find(e => e.email === correo);
       setEstudiantes(estudianteFiltrado ? [estudianteFiltrado] : []);
@@ -86,7 +87,8 @@ function Estudiantes() {
       <div style={{ flex: 1 }}>
         <h2>👩‍🎓 Gestión de Estudiantes</h2>
 
-        {rol !== "ESTUDIANTE" && (
+        {/* SOLO ADMIN puede ver el formulario */}
+        {rol === "ADMIN" && (
           <form onSubmit={guardarEstudiante} className="estudiante-form">
             <input
               name="cedula"
@@ -143,7 +145,7 @@ function Estudiantes() {
               <th>Apellido</th>
               <th>Email</th>
               {rol === "ESTUDIANTE" && <th>Faltas</th>}
-              {rol !== "ESTUDIANTE" && <th>Acciones</th>}
+              {rol === "ADMIN" && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -161,11 +163,12 @@ function Estudiantes() {
                     <td>{e.apellido}</td>
                     <td>{e.email}</td>
                     {rol === "ESTUDIANTE" && <td>{e.cantidadFaltas}</td>}
-                    {rol !== "ESTUDIANTE" && (
+
+                    {rol === "ADMIN" && (
                       <td>
                         <button
                           className="editar-btn"
-                          onClick={() => cargarEstudianteParaEditar(e)}
+                          onClick={() => setNuevo(e)}
                         >
                           Editar
                         </button>
