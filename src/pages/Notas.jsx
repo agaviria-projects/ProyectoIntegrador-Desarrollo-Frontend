@@ -25,8 +25,8 @@ function Notas() {
       let url = "http://localhost:8080/api/notas/dto";
 
       if (rol === "ESTUDIANTE") {
-        if (!estudianteId) {
-          console.warn("ID de estudiante inválido");
+        if (!estudianteId || isNaN(estudianteId)) {
+          setNotas([]);
           return;
         }
         url += `?estudianteId=${estudianteId}`;

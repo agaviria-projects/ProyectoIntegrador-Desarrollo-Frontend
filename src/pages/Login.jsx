@@ -31,9 +31,16 @@ function Login() {
         localStorage.setItem("profesorId", user.profesorId);
       }
 
-      if (user.estudianteId) {
-        localStorage.setItem("estudiante_id", user.estudianteId);
+          // Guardar estudianteId si viene
+      if (user.estudianteId !== undefined && user.estudianteId !== null) {
+        localStorage.setItem("estudiante_id", user.estudianteId.toString());
+        console.log("Guardado estudiante_id:", user.estudianteId);
+      } else {
+        console.warn("estudianteId no encontrado en respuesta del backend");
       }
+
+
+      console.log("Guardando estudianteId en localStorage:", user.estudianteId);
 
       navigate("/dashboard");
         } else {

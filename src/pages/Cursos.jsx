@@ -66,6 +66,7 @@ function Cursos() {
   useEffect(() => {
     cargarCursos();
     if (rol === "ADMIN") cargarProfesores();
+    
   }, []);
 
   const manejarCambio = (e) => {

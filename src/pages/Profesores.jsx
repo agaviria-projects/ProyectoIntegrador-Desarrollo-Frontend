@@ -22,31 +22,37 @@ function Profesores() {
     setNuevo(profesor);
   };
 
-  const cargarProfesores = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/profesores/dto");
-      const datos = Array.isArray(res.data) ? res.data : [];
+const cargarProfesores = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/profesores/dto");
+    const datos = Array.isArray(res.data) ? res.data : [];
 
-      console.log("📧 Email backend original:", datos.map(p => p.email));
-      console.log("📧 Email desde localStorage:",email);
+    console.log("📧 Email backend original:", datos.map(p => p.email));
+    console.log("📧 Email desde localStorage:", email);
+
     if (rol === "PROFESOR") {
-        const profesorFiltrado = datos.find(p => {
-          const backendEmail = (p.email || "").replace(/"/g, "").trim().toLowerCase();
-          const localEmail = (email || "").trim().toLowerCase();
-          return backendEmail === localEmail;
-        });
+      const profesorFiltrado = datos.find(p => {
+        const backendEmail = (p.email || "").replace(/"/g, "").trim().toLowerCase();
+        const localEmail = (email || "").trim().toLowerCase();
+        return backendEmail === localEmail;
+      });
 
-        if (profesorFiltrado) {
-          localStorage.setItem("profesorId", profesorFiltrado.id); // ✅ AÑADE ESTA LÍNEA
-          setProfesores([profesorFiltrado]);
-        } else {
-          setProfesores([]);
-        }
+      if (profesorFiltrado) {
+        localStorage.setItem("profesorId", profesorFiltrado.id); // ✅ para uso futuro
+        setProfesores([profesorFiltrado]);
+      } else {
+        setProfesores([]);
+      }
+    } else {
+      // ✅ Este bloque era el que faltaba
+      setProfesores(datos);
     }
-    } catch (error) {
-      console.error("Error cargando profesores:", error);
-    }
-  };
+
+  } catch (error) {
+    console.error("Error cargando profesores:", error);
+  }
+};
+
 
   useEffect(() => {
     cargarProfesores();

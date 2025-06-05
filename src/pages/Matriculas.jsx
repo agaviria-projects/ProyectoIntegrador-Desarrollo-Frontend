@@ -22,6 +22,7 @@ function Matriculas() {
     cargarMatriculas();
     if (rol === "ADMIN") cargarEstudiantes();
     cargarCursos();
+    console.log("ID del estudiante desde localStorage:", estudianteId);
   }, []);
 
   const cargarMatriculas = async () => {
@@ -29,8 +30,9 @@ function Matriculas() {
       let res;
 
       if (rol === "ESTUDIANTE") {
-        if (!estudianteId) {
-          console.warn("ID del estudiante no válido");
+        if (!estudianteId || isNaN(estudianteId)) {
+         console.warn("ID de estudiante no válido");
+         setMatriculas([]);
           return;
         }
 
