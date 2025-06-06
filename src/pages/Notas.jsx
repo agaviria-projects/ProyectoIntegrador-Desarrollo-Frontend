@@ -148,19 +148,6 @@ function Notas() {
       {rol !== "ESTUDIANTE" && (
         <form onSubmit={guardarNota} className="estudiante-form">
           <input
-            name="nota"
-            type="number"
-            step="0.1"
-            min="1"
-            max="5"
-            placeholder="Nota (ej. 4.5)"
-            value={nuevaNota.nota}
-            onChange={(e) =>
-              setNuevaNota({ ...nuevaNota, nota: e.target.value.replace(",", ".") })
-            }
-            required
-          />
-          <input
             name="fechaNota"
             type="date"
             placeholder="Fecha"
@@ -168,6 +155,7 @@ function Notas() {
             onChange={manejarCambio}
             required
           />
+
           <select
             name="estudianteId"
             value={nuevaNota.estudianteId}
@@ -196,6 +184,20 @@ function Notas() {
             ))}
           </select>
 
+          <input
+            name="nota"
+            type="number"
+            step="0.1"
+            min="1"
+            max="5"
+            placeholder="Nota (ej. 4.5)"
+            value={nuevaNota.nota}
+            onChange={(e) =>
+              setNuevaNota({ ...nuevaNota, nota: e.target.value.replace(",", ".") })
+            }
+            required
+          />
+
           <button type="submit" className="guardar-btn">
             Guardar
           </button>
@@ -217,10 +219,10 @@ function Notas() {
         <table>
           <thead>
             <tr>
-              <th>Nota</th>
               <th>Fecha</th>
               <th>Estudiante</th>
               <th>Curso</th>
+              <th>Nota</th>
               {rol !== "ESTUDIANTE" && <th>Acciones</th>}
             </tr>
           </thead>
@@ -233,12 +235,10 @@ function Notas() {
               )
               .map((n) => (
                 <tr key={n.id}>
-                  <td>{n.nota}</td>
                   <td>{n.fechaNota}</td>
-                  <td>
-                    {n.nombreEstudiante} {n.apellidoEstudiante}
-                  </td>
+                  <td>{n.nombreEstudiante} {n.apellidoEstudiante}</td>
                   <td>{n.nombreCurso}</td>
+                  <td>{n.nota}</td>
                   {rol !== "ESTUDIANTE" && (
                     <td>
                       <button
