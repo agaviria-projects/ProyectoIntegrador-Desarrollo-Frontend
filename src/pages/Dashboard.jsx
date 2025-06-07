@@ -1,24 +1,49 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import './Dashboard.css';
+import "./Dashboard.css";
 import {
-  FaUserCog, FaUserGraduate, FaBook, FaClipboardList,
-  FaChalkboardTeacher, FaFileExcel, FaPlus, FaChartBar,
-  FaWhatsapp, FaGithub, FaLinkedin, FaSlideshare
+  FaUserCog,
+  FaUserGraduate,
+  FaBook,
+  FaClipboardList,
+  FaChalkboardTeacher,
+  FaFileExcel,
+  FaPlus,
+  FaChartBar,
+  FaWhatsapp,
+  FaGithub,
+  FaLinkedin,
+  FaSlideshare,
 } from "react-icons/fa";
 import axios from "axios";
 
 import adminImg from "../assets/admin.jpg";
-import profesorImg from "../assets/profesor.JPG";
-import estudianteImg from "../assets/estudiante.JPG";
+
 import logo from "../assets/logosinfondo.png";
+
+// ✅ Nuevas importaciones válidas para Vite + React
+import estudianteHombre from "../assets/estudiante_hombre.jpg";
+import estudianteMujer from "../assets/estudiante_mujer.jpg";
+import estudianteNeutro from "../assets/estudiante_neutro.jpg";
+
+import profesor1 from "../assets/profesor1.jpg";
+import profesor2 from "../assets/profesor2.jpg";
+import profesor3 from "../assets/profesor3.jpg";
+
+const estudianteImgs = [estudianteHombre, estudianteMujer, estudianteNeutro];
+const profesorImgs = [profesor1, profesor2, profesor3];
 
 function Dashboard() {
   const [foto, setFoto] = useState(adminImg);
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const username = localStorage.getItem("userName") || "admin";
   const correo = localStorage.getItem("correo") || "";
-  const rolTexto = rol === "ADMIN" ? "Administrador" : rol === "PROFESOR" ? "Profesor" : "Estudiante";
+  const rolTexto =
+    rol === "ADMIN"
+      ? "Administrador"
+      : rol === "PROFESOR"
+      ? "Profesor"
+      : "Estudiante";
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [fechaActual, setFechaActual] = useState("");
@@ -32,12 +57,30 @@ function Dashboard() {
   const [totalUsuarios, setTotalUsuarios] = useState(0);
 
   useEffect(() => {
-    if (rol === "PROFESOR") setFoto(profesorImg);
-    else if (rol === "ESTUDIANTE") setFoto(estudianteImg);
-    else setFoto(adminImg);
+    if (rol === "PROFESOR") {
+      const guardada = localStorage.getItem("foto_profesor");
+      const indice = guardada
+        ? parseInt(guardada)
+        : Math.floor(Math.random() * profesorImgs.length);
+      if (!guardada) localStorage.setItem("foto_profesor", indice);
+      setFoto(profesorImgs[indice]);
+    } else if (rol === "ESTUDIANTE") {
+      const guardada = localStorage.getItem("foto_estudiante");
+      const indice = guardada
+        ? parseInt(guardada)
+        : Math.floor(Math.random() * estudianteImgs.length);
+      if (!guardada) localStorage.setItem("foto_estudiante", indice);
+      setFoto(estudianteImgs[indice]);
+    } else {
+      setFoto(adminImg);
+    }
 
+    // Hora y fecha
     const hoy = new Date().toLocaleDateString("es-CO", {
-      weekday: "long", year: "numeric", month: "long", day: "numeric"
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
     setFechaActual(hoy.charAt(0).toUpperCase() + hoy.slice(1));
 
@@ -50,12 +93,24 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchData = () => {
-      axios.get("http://localhost:8080/api/estudiantes/total").then(res => setTotalEstudiantes(res.data));
-      axios.get("http://localhost:8080/api/cursos/total").then(res => setTotalCursos(res.data));
-      axios.get("http://localhost:8080/api/matriculas/total").then(res => setTotalMatriculas(res.data));
-      axios.get("http://localhost:8080/api/profesores/total").then(res => setTotalProfesores(res.data));
-      axios.get("http://localhost:8080/api/notas/total").then(res => setTotalNotas(res.data));
-      axios.get("http://localhost:8080/api/usuarios/total").then(res => setTotalUsuarios(res.data));
+      axios
+        .get("http://localhost:8080/api/estudiantes/total")
+        .then((res) => setTotalEstudiantes(res.data));
+      axios
+        .get("http://localhost:8080/api/cursos/total")
+        .then((res) => setTotalCursos(res.data));
+      axios
+        .get("http://localhost:8080/api/matriculas/total")
+        .then((res) => setTotalMatriculas(res.data));
+      axios
+        .get("http://localhost:8080/api/profesores/total")
+        .then((res) => setTotalProfesores(res.data));
+      axios
+        .get("http://localhost:8080/api/notas/total")
+        .then((res) => setTotalNotas(res.data));
+      axios
+        .get("http://localhost:8080/api/usuarios/total")
+        .then((res) => setTotalUsuarios(res.data));
     };
 
     fetchData();
@@ -70,13 +125,16 @@ function Dashboard() {
 
   const exportarNotas = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/notas/exportar-notas", {
-        responseType: "blob",
-        headers: {
-          rol: rol,
-          correo: correo
+      const res = await axios.get(
+        "http://localhost:8080/api/notas/exportar-notas",
+        {
+          responseType: "blob",
+          headers: {
+            rol: rol,
+            correo: correo,
+          },
         }
-      });
+      );
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -89,18 +147,52 @@ function Dashboard() {
   };
 
   const estiloOpcion = {
-    padding: "8px 12px", fontSize: "14px", color: "#1e293b",
-    cursor: "pointer", borderRadius: "6px", whiteSpace: "nowrap"
+    padding: "8px 12px",
+    fontSize: "14px",
+    color: "#1e293b",
+    cursor: "pointer",
+    borderRadius: "6px",
+    whiteSpace: "nowrap",
   };
 
   const cards = [
-    { icon: <FaUserGraduate />, label: "Estudiantes", value: totalEstudiantes, color: "#facc15" },
+    {
+      icon: <FaUserGraduate />,
+      label: "Estudiantes",
+      value: totalEstudiantes,
+      color: "#facc15",
+    },
     { icon: <FaBook />, label: "Cursos", value: totalCursos, color: "#60a5fa" },
-    { icon: <FaClipboardList />, label: "Matrículas", value: totalMatriculas, color: "#6ee7b7" },
-    { icon: <FaChalkboardTeacher />, label: "Profesores", value: totalProfesores, color: "#c4b5fd" },
-    { icon: <FaClipboardList />, label: "Notas", value: totalNotas, color: "#fda4af" },
-    { icon: <FaUserCog />, label: "Usuarios", value: totalUsuarios, color: "#f97316" },
-    { icon: <FaChartBar />, label: "Análisis de Datos", value: 1, color: "#38bdf8" }
+    {
+      icon: <FaClipboardList />,
+      label: "Matrículas",
+      value: totalMatriculas,
+      color: "#6ee7b7",
+    },
+    {
+      icon: <FaChalkboardTeacher />,
+      label: "Profesores",
+      value: totalProfesores,
+      color: "#c4b5fd",
+    },
+    {
+      icon: <FaClipboardList />,
+      label: "Notas",
+      value: totalNotas,
+      color: "#fda4af",
+    },
+    {
+      icon: <FaUserCog />,
+      label: "Usuarios",
+      value: totalUsuarios,
+      color: "#f97316",
+    },
+    {
+      icon: <FaChartBar />,
+      label: "Análisis de Datos",
+      value: 1,
+      color: "#38bdf8",
+    },
   ];
 
   const quickActions = [
@@ -109,47 +201,85 @@ function Dashboard() {
     {
       icon: <FaSlideshare size={22} color="#b91c1c" />,
       label: "Presentación técnica",
-      action: () => window.open("https://gamma.app/docs/EducationSystem-Proyecto-Integrador-2025-41t14uwve25tsce?mode=present#card-pgwf57irix8rdtj", "_blank")
+      action: () =>
+        window.open(
+          "https://gamma.app/docs/EducationSystem-Proyecto-Integrador-2025-41t14uwve25tsce?mode=present#card-pgwf57irix8rdtj",
+          "_blank"
+        ),
     },
     {
       icon: <FaFileExcel size={22} color="#16a34a" />,
       label: "Exportar a Excel",
-      action: exportarNotas
-    }
+      action: exportarNotas,
+    },
   ];
-   return (
+  return (
     <div className="dashboard-container">
       <div className="sidebar">
         <img src={logo} alt="Logo" />
         <h2>EducationSystem</h2>
         <nav>
-          {rol === "ADMIN" && <SidebarLink to="/gestion-usuarios" icon={<FaUserCog color="#fff" />} text="Gestión de Usuarios" />}
+          {rol === "ADMIN" && (
+            <SidebarLink
+              to="/gestion-usuarios"
+              icon={<FaUserCog color="#fff" />}
+              text="Gestión de Usuarios"
+            />
+          )}
           <SidebarLink to="/estudiantes" text="Estudiantes" />
           <SidebarLink to="/cursos" text="Cursos" />
           <SidebarLink to="/matriculas" text="Matrículas" />
           <SidebarLink to="/profesores" text="Profesores" />
           <SidebarLink to="/notas" text="Notas" />
           <SidebarLink to="/analitica" text="Análisis de datos" />
-          <a onClick={cerrarSesion} className="sidebar-link" style={{ cursor: "pointer" }}>
+          <a
+            onClick={cerrarSesion}
+            className="sidebar-link"
+            style={{ cursor: "pointer" }}
+          >
             Cerrar sesión
           </a>
         </nav>
       </div>
 
       <div className="main-content">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "30px",
+          }}
+        >
           <div>
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
-              style={{ fontSize: "28px", fontWeight: "600", marginBottom: "5px", color: "#bfa047" }}
-            > 
-              
-              <h2>¡Bienvenido {rolTexto}, {username.replace('.', ' ')}!</h2>
+              style={{
+                fontSize: "28px",
+                fontWeight: "600",
+                marginBottom: "5px",
+                color: "#bfa047",
+              }}
+            >
+              <h2>
+                ¡Bienvenido {rolTexto}, {username.replace(".", " ")}!
+              </h2>
             </motion.h2>
-            <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>🎯 Tu gestión hace la diferencia.</p>
-            <p style={{ color: "#64748b", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", marginBottom: "10px" }}>
+            <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>
+              🎯 Tu gestión hace la diferencia.
+            </p>
+            <p
+              style={{
+                color: "#64748b",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                marginBottom: "10px",
+              }}
+            >
               📅{fechaActual} | 🕒 {horaActual}
             </p>
           </div>
@@ -160,14 +290,35 @@ function Dashboard() {
               alt="perfil"
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
-              style={{ width: "80px", height: "80px", borderRadius: "50%", cursor: "pointer" }}
+              style={{
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                cursor: "pointer",
+              }}
               onClick={() => setMenuAbierto(!menuAbierto)}
             />
             {rol === "ADMIN" && menuAbierto && (
-              <div style={{ position: "absolute", top: "90px", right: 0, backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", padding: "12px", minWidth: "180px", zIndex: 1000 }}>
-                <p style={estiloOpcion} onClick={() => setMostrarPerfil(true)}>👤 Ver perfil</p>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "90px",
+                  right: 0,
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  padding: "12px",
+                  minWidth: "180px",
+                  zIndex: 1000,
+                }}
+              >
+                <p style={estiloOpcion} onClick={() => setMostrarPerfil(true)}>
+                  👤 Ver perfil
+                </p>
                 <p style={estiloOpcion}>✏️ Editar</p>
-                <p style={estiloOpcion} onClick={cerrarSesion}>🔒 Cerrar sesión</p>
+                <p style={estiloOpcion} onClick={cerrarSesion}>
+                  🔒 Cerrar sesión
+                </p>
               </div>
             )}
           </div>
@@ -190,13 +341,26 @@ function Dashboard() {
               >
                 {card.icon}
               </motion.div>
-              <h3 style={{ fontSize: "15px", margin: "8px 0 4px" }}>{card.label}</h3>
-              <p style={{ fontSize: "18px", fontWeight: "bold" }}>{card.value}</p>
+              <h3 style={{ fontSize: "15px", margin: "8px 0 4px" }}>
+                {card.label}
+              </h3>
+              <p style={{ fontSize: "18px", fontWeight: "bold" }}>
+                {card.value}
+              </p>
             </motion.div>
           ))}
         </div>
 
-        <h3 style={{ textAlign: "center", margin: "40px 0 20px", fontSize: "18px", color: "#1e293b" }}>Accesos rápidos</h3>
+        <h3
+          style={{
+            textAlign: "center",
+            margin: "40px 0 20px",
+            fontSize: "18px",
+            color: "#1e293b",
+          }}
+        >
+          Accesos rápidos
+        </h3>
         <div className="quick-actions">
           {quickActions.map((action, idx) => (
             <motion.div
@@ -204,13 +368,27 @@ function Dashboard() {
               whileHover={{ scale: 1.07 }}
               transition={{ type: "spring", stiffness: 300 }}
               style={{
-                background: "#ffffff", borderRadius: "12px", padding: "18px", minWidth: "150px",
-                textAlign: "center", boxShadow: "0 2px 10px rgba(0,0,0,0.08)", cursor: "pointer"
+                background: "#ffffff",
+                borderRadius: "12px",
+                padding: "18px",
+                minWidth: "150px",
+                textAlign: "center",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+                cursor: "pointer",
               }}
               onClick={action.action || undefined}
             >
               <div>{action.icon}</div>
-              <p style={{ marginTop: "12px", fontSize: "14px", fontWeight: "bold", color: "#1e293b" }}>{action.label}</p>
+              <p
+                style={{
+                  marginTop: "12px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  color: "#1e293b",
+                }}
+              >
+                {action.label}
+              </p>
             </motion.div>
           ))}
         </div>
@@ -230,32 +408,95 @@ function Dashboard() {
             padding: "8px 16px",
             color: "white",
             boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           <FaWhatsapp size={22} style={{ marginRight: "8px" }} />
-          <a href="https://wa.me/573006199324" target="_blank" rel="noopener noreferrer" style={{ color: "white", textDecoration: "none", fontWeight: 500 }}>
+          <a
+            href="https://wa.me/573006199324"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", textDecoration: "none", fontWeight: 500 }}
+          >
             Hablemos por Whatsapp
           </a>
         </motion.div>
 
         {mostrarPerfil && (
-          <div style={{
-            position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center",
-            alignItems: "center", zIndex: 2000
-          }}>
-            <div style={{
-              backgroundColor: "#fff", padding: "30px", borderRadius: "12px",
-              width: "400px", boxShadow: "0 8px 20px rgba(0,0,0,0.2)", textAlign: "center", position: "relative"
-            }}>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 2000,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: "30px",
+                borderRadius: "12px",
+                width: "400px",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.2)",
+                textAlign: "center",
+                position: "relative",
+              }}
+            >
               <h2 style={{ marginBottom: "10px" }}>Perfil profesional</h2>
-              <img src={foto} alt="perfil" style={{ width: "80px", borderRadius: "50%", marginBottom: "12px" }} />
-              <p><strong>Nombre completo:</strong> Héctor Alejandro Gaviria Marín</p>
-              <p><strong>Email:</strong> agaviria1408@gmail.com</p>
-              <p><strong>GitHub:</strong> <a href="https://github.com/agaviria-projects" target="_blank" rel="noopener noreferrer"><FaGithub /> github.com/agaviria-projects</a></p>
-              <p><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/héctor-alejandro-gaviria-marin-43296265" target="_blank" rel="noopener noreferrer"><FaLinkedin /> linkedin.com/in/héctor-alejandro-gaviria-marin-43296265</a></p>
-              <button onClick={() => setMostrarPerfil(false)} style={{ marginTop: "20px", padding: "10px 20px", backgroundColor: "#0f172a", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}>
+              <img
+                src={foto}
+                alt="perfil"
+                style={{
+                  width: "80px",
+                  borderRadius: "50%",
+                  marginBottom: "12px",
+                }}
+              />
+              <p>
+                <strong>Nombre completo:</strong> {username.replace(".", " ")}
+              </p>
+              <p>
+                <strong>Email:</strong> {correo}
+              </p>
+              <p>
+                <strong>GitHub:</strong>{" "}
+                <a
+                  href="https://github.com/agaviria-projects"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub /> github.com/agaviria-projects
+                </a>
+              </p>
+              <p>
+                <strong>LinkedIn:</strong>{" "}
+                <a
+                  href="https://linkedin.com/in/héctor-alejandro-gaviria-marin-43296265"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaLinkedin />{" "}
+                  linkedin.com/in/héctor-alejandro-gaviria-marin-43296265
+                </a>
+              </p>
+              <button
+                onClick={() => setMostrarPerfil(false)}
+                style={{
+                  marginTop: "20px",
+                  padding: "10px 20px",
+                  backgroundColor: "#0f172a",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
                 Cerrar
               </button>
             </div>
@@ -273,7 +514,11 @@ function Dashboard() {
 }
 
 function SidebarLink({ to, text }) {
-  return <a href={to} className="sidebar-link">{text}</a>;
+  return (
+    <a href={to} className="sidebar-link">
+      {text}
+    </a>
+  );
 }
 
 export default Dashboard;
