@@ -177,3 +177,21 @@
   transform: scaleX(1);
 }
 
+.bienvenida-titulo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #b48c16; /* Dorado elegante */
+  text-shadow: 1px 1px 4px rgba(255, 223, 100, 0.7);
+  animation: brillo 2s infinite alternate;
+}
+
+@keyframes brillo {
+  0% {
+    text-shadow: 1px 1px 4px rgba(255, 223, 100, 0.5);
+  }
+  100% {
+    text-shadow: 2px 2px 8px rgba(255, 223, 100, 1);
+  }
+}
+
+

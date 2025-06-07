@@ -263,7 +263,9 @@ function Dashboard() {
                 color: "#bfa047",
               }}
             >
+                <h2>
                 ¡Bienvenido {rolTexto}, {username.replace(".", " ")}!
+                </h2>
             </motion.h2>
             <p style={{ marginTop: "5px", fontSize: "16px", color: "#475569" }}>
               🎯 Tu gestión hace la diferencia.
