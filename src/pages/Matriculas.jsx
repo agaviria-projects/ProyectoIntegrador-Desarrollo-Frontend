@@ -18,21 +18,13 @@ function Matriculas() {
   const rol = localStorage.getItem("rol")?.toUpperCase();
   const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
 
-  useEffect(() => {
-    cargarMatriculas();
-    if (rol === "ADMIN") cargarEstudiantes();
-    cargarCursos();
-    console.log("ID del estudiante desde localStorage:", estudianteId);
-  }, []);
-
   const cargarMatriculas = async () => {
     try {
       let res;
 
       if (rol === "ESTUDIANTE") {
         if (!estudianteId || isNaN(estudianteId)) {
-         console.warn("ID de estudiante no válido");
-         setMatriculas([]);
+          console.warn("ID de estudiante no válido");
           return;
         }
 
@@ -42,21 +34,37 @@ function Matriculas() {
           nombreEstudiante: m.estudiante.nombre,
           apellidoEstudiante: m.estudiante.apellido,
           nombreCurso: m.curso.nombre,
-          fechaMatricula: m.fechaMatricula
+          fechaMatricula: m.fechaMatricula,
         }));
         setMatriculas(data);
+
+      } else if (rol === "PROFESOR") {
+        const profesorId = parseInt(localStorage.getItem("profesorId") || "0");
+        if (!profesorId || isNaN(profesorId)) {
+          console.warn("ID de profesor no válido");
+          return;
+        }
+
+        res = await axios.get(`http://localhost:8080/api/matriculas/profesor/${profesorId}`);
+        setMatriculas(res.data || []);
+
       } else {
         res = await axios.get("http://localhost:8080/api/matriculas");
         setMatriculas(res.data || []);
       }
+
     } catch (error) {
       console.error("Error al cargar matrículas:", error);
     }
   };
 
   const cargarEstudiantes = async () => {
-    const res = await axios.get("http://localhost:8080/api/estudiantes");
-    setEstudiantes(res.data || []);
+    try {
+      const res = await axios.get("http://localhost:8080/api/estudiantes");
+      setEstudiantes(res.data || []);
+    } catch (error) {
+      console.error("Error cargando estudiantes:", error);
+    }
   };
 
   const cargarCursos = async () => {
@@ -64,9 +72,15 @@ function Matriculas() {
       const res = await axios.get("http://localhost:8080/api/cursos/dto");
       setCursos(res.data || []);
     } catch (error) {
-      console.error("Error al cargar cursos:", error);
+      console.error("Error cargando cursos:", error);
     }
   };
+
+  useEffect(() => {
+    cargarMatriculas();
+    if (rol === "ADMIN") cargarEstudiantes();
+    cargarCursos();
+  }, []);
 
   const manejarCambio = (e) => {
     const { name, value } = e.target;
@@ -96,8 +110,12 @@ function Matriculas() {
   };
 
   const eliminarMatricula = async (id) => {
-    await axios.delete(`http://localhost:8080/api/matriculas/${id}`);
-    cargarMatriculas();
+    try {
+      await axios.delete(`http://localhost:8080/api/matriculas/${id}`);
+      cargarMatriculas();
+    } catch (error) {
+      console.error("Error al eliminar matrícula:", error);
+    }
   };
 
   return (
@@ -178,8 +196,8 @@ function Matriculas() {
           <tbody>
             {matriculas
               .filter((m) =>
-                `${m.nombreEstudiante} ${m.apellidoEstudiante || ""}`.toLowerCase().includes(filtro) ||
-                m.nombreCurso.toLowerCase().includes(filtro)
+                `${m.nombreEstudiante || ""} ${m.apellidoEstudiante || ""}`.toLowerCase().includes(filtro) ||
+                (m.nombreCurso || "").toLowerCase().includes(filtro)
               )
               .map((m) => (
                 <tr key={m.id}>
@@ -193,8 +211,12 @@ function Matriculas() {
                         onClick={() =>
                           setNueva({
                             id: m.id,
-                            estudianteId: estudiantes.find(e => `${e.nombre} ${e.apellido}` === `${m.nombreEstudiante} ${m.apellidoEstudiante}`)?.id || "",
-                            cursoId: cursos.find(c => c.nombre === m.nombreCurso)?.id || "",
+                            estudianteId:
+                              estudiantes.find(e =>
+                                `${e.nombre} ${e.apellido}` === `${m.nombreEstudiante} ${m.apellidoEstudiante}`
+                              )?.id || "",
+                            cursoId:
+                              cursos.find(c => c.nombre === m.nombreCurso)?.id || "",
                             fechaMatricula: m.fechaMatricula,
                           })
                         }

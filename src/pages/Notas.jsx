@@ -11,6 +11,7 @@ function Notas() {
 
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
+  const profesorId = parseInt(localStorage.getItem("profesorId") || "0");
 
   const [nuevaNota, setNuevaNota] = useState({
     id: null,
@@ -23,29 +24,34 @@ function Notas() {
   const cargarNotas = async () => {
     try {
       let url = "http://localhost:8080/api/notas/dto";
+      const params = [];
 
-      if (rol === "ESTUDIANTE") {
-        if (!estudianteId || isNaN(estudianteId)) {
-          setNotas([]);
-          return;
-        }
-        url += `?estudianteId=${estudianteId}`;
-      } else if (rol === "PROFESOR") {
-        const profesorId = localStorage.getItem("profesorId");
-        url += `?profesorId=${profesorId}`;
+      if (rol === "ESTUDIANTE" && estudianteId) {
+        params.push(`estudianteId=${estudianteId}`);
+      }
+
+      if (rol === "PROFESOR" && profesorId) {
+        params.push(`profesorId=${profesorId}`);
+      }
+
+      if (params.length > 0) {
+        url += `?${params.join("&")}`;
       }
 
       const res = await axios.get(url);
-      const datos = Array.isArray(res.data) ? res.data : [];
-      setNotas(datos);
+      setNotas(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error al cargar notas:", error);
     }
   };
 
   const cargarEstudiantes = async () => {
-    const res = await axios.get("http://localhost:8080/api/estudiantes");
-    setEstudiantes(res.data);
+    try {
+      const res = await axios.get("http://localhost:8080/api/estudiantes");
+      setEstudiantes(res.data);
+    } catch (error) {
+      console.error("Error cargando estudiantes:", error);
+    }
   };
 
   const cargarCursosPorEstudiante = async (estudianteId) => {
@@ -60,7 +66,9 @@ function Notas() {
 
   useEffect(() => {
     cargarNotas();
-    if (rol !== "ESTUDIANTE") cargarEstudiantes();
+    if (rol !== "ESTUDIANTE") {
+      cargarEstudiantes();
+    }
   }, []);
 
   useEffect(() => {
@@ -83,22 +91,27 @@ function Notas() {
       return;
     }
 
-    await axios.post("http://localhost:8080/api/notas", {
-      id: nuevaNota.id,
-      nota: nuevaNota.nota,
-      fechaNota: nuevaNota.fechaNota,
-      estudianteId: nuevaNota.estudianteId,
-      cursoId: nuevaNota.cursoId
-    });
+    try {
+      await axios.post("http://localhost:8080/api/notas", {
+        id: nuevaNota.id,
+        nota: nuevaNota.nota,
+        fechaNota: nuevaNota.fechaNota,
+        estudianteId: nuevaNota.estudianteId,
+        cursoId: nuevaNota.cursoId
+      });
 
-    cargarNotas();
-    setNuevaNota({
-      id: null,
-      nota: "",
-      fechaNota: "",
-      estudianteId: "",
-      cursoId: ""
-    });
+      setNuevaNota({
+        id: null,
+        nota: "",
+        fechaNota: "",
+        estudianteId: "",
+        cursoId: ""
+      });
+
+      cargarNotas();
+    } catch (error) {
+      console.error("Error al guardar nota:", error);
+    }
   };
 
   const cargarNotaParaEditar = (nota) => {
@@ -229,9 +242,7 @@ function Notas() {
           <tbody>
             {notas
               .filter((n) =>
-                `${n.nombreEstudiante} ${n.apellidoEstudiante}`
-                  .toLowerCase()
-                  .includes(filtro)
+                `${n.nombreEstudiante || ""} ${n.apellidoEstudiante || ""}`.toLowerCase().includes(filtro)
               )
               .map((n) => (
                 <tr key={n.id}>
@@ -241,16 +252,10 @@ function Notas() {
                   <td>{n.nota}</td>
                   {rol !== "ESTUDIANTE" && (
                     <td>
-                      <button
-                        className="editar-btn"
-                        onClick={() => cargarNotaParaEditar(n)}
-                      >
+                      <button className="editar-btn" onClick={() => cargarNotaParaEditar(n)}>
                         Editar
                       </button>
-                      <button
-                        className="eliminar-btn"
-                        onClick={() => eliminarNota(n.id)}
-                      >
+                      <button className="eliminar-btn" onClick={() => eliminarNota(n.id)}>
                         Eliminar
                       </button>
                     </td>

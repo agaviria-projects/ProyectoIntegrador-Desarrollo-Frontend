@@ -31,8 +31,9 @@ function Estudiantes() {
   };
 
   useEffect(() => {
+    if (!correo) return; 
     cargarEstudiantes();
-  }, []);
+  }, [correo]);
 
   const manejarCambio = (e) => {
     setNuevo({ ...nuevo, [e.target.name]: e.target.value });

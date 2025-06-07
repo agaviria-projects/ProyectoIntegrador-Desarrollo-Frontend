@@ -16,70 +16,63 @@ function Profesores() {
   const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const email = localStorage.getItem("correo") || "";
 
-
-
   const cargarProfesorParaEditar = (profesor) => {
     setNuevo(profesor);
   };
 
-const cargarProfesores = async () => {
-  try {
-    const res = await axios.get("http://localhost:8080/api/profesores/dto");
-    const datos = Array.isArray(res.data) ? res.data : [];
+      const cargarProfesores = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/profesores/dto");
+        const datos = Array.isArray(res.data) ? res.data : [];
 
-    console.log("📧 Email backend original:", datos.map(p => p.email));
-    console.log("📧 Email desde localStorage:", email);
-
-    if (rol === "PROFESOR") {
-      const profesorFiltrado = datos.find(p => {
-        const backendEmail = (p.email || "").replace(/"/g, "").trim().toLowerCase();
-        const localEmail = (email || "").trim().toLowerCase();
-        return backendEmail === localEmail;
-      });
-
-      if (profesorFiltrado) {
-        localStorage.setItem("profesorId", profesorFiltrado.id); // ✅ para uso futuro
-        setProfesores([profesorFiltrado]);
-      } else {
-        setProfesores([]);
+        if (rol === "PROFESOR") {
+          const profesorFiltrado = datos.find(p =>
+            p.email.trim().toLowerCase() === email.trim().toLowerCase()
+          );
+          if (profesorFiltrado) {
+            localStorage.setItem("profesorId", profesorFiltrado.id.toString());
+            setProfesores([profesorFiltrado]);
+          } else {
+            console.warn("⚠️ Profesor no encontrado con ese correo.");
+            setProfesores([]);
+          }
+        } else {
+          setProfesores(datos);
+        }
+      } catch (error) {
+        console.error("Error al cargar profesores:", error);
       }
-    } else {
-
-      setProfesores(datos);
-    }
-
-  } catch (error) {
-    console.error("Error cargando profesores:", error);
-  }
-};
-
+    };
 
   useEffect(() => {
+      if (!email) {
+       console.warn("Email vacío en localStorage, no se puede filtrar profesor.");
+       return;   
+    }
     cargarProfesores();
-  }, []);
+    }, [email]);
 
+    cargarProfesores();
+   
   const manejarCambio = (e) => {
     setNuevo({ ...nuevo, [e.target.name]: e.target.value });
   };
 
   const guardarProfesor = async (e) => {
-      e.preventDefault();
-      try {
-        // Creamos un nuevo objeto excluyendo el campo id
-        const { nombre, especialidad, email } = nuevo;
-
-        await axios.post("http://localhost:8080/api/profesores", {
-          nombre,
-          especialidad,
-          email
-        });
-
-        cargarProfesores();
-        setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
-      } catch (error) {
-        console.error("Error guardando profesor:", error);
-      }
-    };
+    e.preventDefault();
+    try {
+      const { nombre, especialidad, email } = nuevo;
+      await axios.post("http://localhost:8080/api/profesores", {
+        nombre,
+        especialidad,
+        email
+      });
+      cargarProfesores();
+      setNuevo({ id: null, nombre: "", especialidad: "", email: "" });
+    } catch (error) {
+      console.error("Error guardando profesor:", error);
+    }
+  };
 
   const eliminarProfesor = async (id) => {
     try {
@@ -166,31 +159,28 @@ const cargarProfesores = async () => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(profesores) &&
-              profesores
-                .filter(
-                  (p) =>
-                    p.nombre.toLowerCase().includes(filtro) ||
-                    p.especialidad.toLowerCase().includes(filtro)
-                )
-                .map((p) => (
-                  <tr key={p.id}>
-                    <td>{p.nombre}</td>
-                    <td>{p.especialidad}</td>
-                    <td>{p.email}</td>
-                    
-                    {rol === "ADMIN" && (
-                      <td>
-                        <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>
-                          Editar
-                        </button>
-                        <button className="eliminar-btn" onClick={() => eliminarProfesor(p.id)}>
-                          Eliminar
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
+            {profesores
+              .filter(p =>
+                p.nombre.toLowerCase().includes(filtro) ||
+                p.especialidad.toLowerCase().includes(filtro)
+              )
+              .map(p => (
+                <tr key={p.id}>
+                  <td>{p.nombre}</td>
+                  <td>{p.especialidad}</td>
+                  <td>{p.email}</td>
+                  {rol === "ADMIN" && (
+                    <td>
+                      <button className="editar-btn" onClick={() => cargarProfesorParaEditar(p)}>
+                        Editar
+                      </button>
+                      <button className="eliminar-btn" onClick={() => eliminarProfesor(p.id)}>
+                        Eliminar
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

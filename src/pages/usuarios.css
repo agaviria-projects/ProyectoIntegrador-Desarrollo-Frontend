@@ -64,17 +64,15 @@
 .tabla-contenedor {
   overflow-x: auto;
   margin-top: 10px;
+  max-width: 100%;
 }
 
 .tabla-estudiantes {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 14px;
-}
-
-.tabla-estudiantes thead {
-  background-color: #0f172a;
-  color: white;
+  display: table;
 }
 
 .tabla-estudiantes th,
@@ -82,43 +80,40 @@
   padding: 12px;
   border: 1px solid #ccc;
   text-align: left;
+  word-break: break-word;
 }
 
-.btn-regresar {
-  margin: 30px auto 10px auto;
-  display: block;
-  padding: 10px 16px;
-  background-color: #1e293b;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
+/* ID */
+.tabla-estudiantes th:nth-child(1),
+.tabla-estudiantes td:nth-child(1) {
+  width: 50px;
 }
 
-.footer {
+/* Nombre de usuario */
+.tabla-estudiantes th:nth-child(2),
+.tabla-estudiantes td:nth-child(2) {
+  width: 160px;
+}
+
+/* Correo */
+.tabla-estudiantes th:nth-child(3),
+.tabla-estudiantes td:nth-child(3) {
+  width: 280px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Rol */
+.tabla-estudiantes th:nth-child(4),
+.tabla-estudiantes td:nth-child(4) {
+  width: 100px;
   text-align: center;
-  margin-top: 40px;
-  font-size: 13px;
-  color: #777;
 }
 
-.buscador {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.buscador input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 300px;
-  max-width: 90%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  background-image: url('../assets/lupa.svg'); /* ícono de lupa si lo tienes */
-  background-repeat: no-repeat;
-  background-position: 10px center;
-  padding-left: 35px;
+/* Acciones */
+.tabla-estudiantes th:nth-child(5),
+.tabla-estudiantes td:nth-child(5) {
+  width: 160px;
+  text-align: center;
 }

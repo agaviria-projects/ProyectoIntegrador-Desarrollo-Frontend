@@ -14,7 +14,7 @@ function Cursos() {
     profesorId: ""
   });
 
-  const rol = localStorage.getItem("rol")?.toUpperCase();
+  const rol = (localStorage.getItem("rol") || "ADMIN").toUpperCase();
   const correo = localStorage.getItem("correo");
   const estudianteId = parseInt(localStorage.getItem("estudiante_id") || "0");
   const [profesorId, setProfesorId] = useState(parseInt(localStorage.getItem("profesorId") || "0"));
@@ -27,32 +27,28 @@ function Cursos() {
       if (profesor) {
         localStorage.setItem("profesorId", profesor.id);
         setProfesorId(profesor.id);
+        return profesor.id;
       }
     } catch (error) {
       console.error("Error obteniendo el profesor:", error);
     }
+    return null;
   };
 
-  const cargarCursos = async () => {
+  const cargarCursos = async (idProfesorParam = null) => {
     try {
       let cursosFiltrados = [];
 
       if (rol === "PROFESOR") {
-        if (!profesorId || isNaN(profesorId)) {
-          setEsperando(true);
-          console.warn("⏳ Esperando profesorId en localStorage...");
-          await cargarProfesorId();
-          setEsperando(false);
-          return;
-        }
+        const idFinal = idProfesorParam || profesorId;
 
         const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
         const todos = Array.isArray(resCursos.data) ? resCursos.data : [];
-        cursosFiltrados = todos.filter(c => c.profesorId === profesorId);
+        cursosFiltrados = todos.filter(c => c.profesorId === idFinal);
 
       } else if (rol === "ESTUDIANTE") {
-        if (isNaN(estudianteId) || estudianteId === 0) {
-          console.warn("ID del estudiante no válido en localStorage");
+        if (!estudianteId || isNaN(estudianteId)) {
+          console.warn("⚠️ ID de estudiante no válido");
           return;
         }
 
@@ -63,7 +59,6 @@ function Cursos() {
           descripcion: m.curso.descripcion,
           nombreProfesor: m.curso.profesor?.nombre || "Sin profesor"
         }));
-
       } else {
         const resCursos = await axios.get("http://localhost:8080/api/cursos/dto");
         cursosFiltrados = Array.isArray(resCursos.data) ? resCursos.data : [];
@@ -85,19 +80,26 @@ function Cursos() {
   };
 
   useEffect(() => {
+    const iniciarCarga = async () => {
+      if (rol === "PROFESOR") {
+        if (!profesorId || isNaN(profesorId)) {
+          setEsperando(true);
+          const nuevoId = await cargarProfesorId();
+          setEsperando(false);
+          if (nuevoId) {
+            await cargarCursos(nuevoId);
+          }
+          return;
+        }
+      }
+      await cargarCursos();
+    };
+
+    iniciarCarga();
     if (rol === "ADMIN") {
       cargarProfesores();
-      cargarCursos();
-    } else if (rol === "PROFESOR") {
-      if (!profesorId || isNaN(profesorId)) {
-        cargarProfesorId().then(() => cargarCursos());
-      } else {
-        cargarCursos();
-      }
-    } else {
-      cargarCursos();
     }
-  }, [rol, profesorId]);
+  }, [profesorId, rol]);
 
   const manejarCambio = (e) => {
     setNuevo({ ...nuevo, [e.target.name]: e.target.value });
@@ -164,12 +166,31 @@ function Cursos() {
 
       {rol === "ADMIN" && (
         <form onSubmit={guardarCurso} className="estudiante-form">
-          <input name="nombre" placeholder="Nombre" value={nuevo.nombre} onChange={manejarCambio} required />
-          <input name="descripcion" placeholder="Descripción" value={nuevo.descripcion} onChange={manejarCambio} required />
-          <select name="profesorId" value={nuevo.profesorId} onChange={manejarCambio} required>
+          <input
+            name="nombre"
+            placeholder="Nombre"
+            value={nuevo.nombre}
+            onChange={manejarCambio}
+            required
+          />
+          <input
+            name="descripcion"
+            placeholder="Descripción"
+            value={nuevo.descripcion}
+            onChange={manejarCambio}
+            required
+          />
+          <select
+            name="profesorId"
+            value={nuevo.profesorId}
+            onChange={manejarCambio}
+            required
+          >
             <option value="">Seleccione un profesor</option>
             {profesores.map((p) => (
-              <option key={p.id} value={p.id}>{p.nombre}</option>
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
             ))}
           </select>
           <button type="submit" className="guardar-btn">Guardar</button>
@@ -199,7 +220,7 @@ function Cursos() {
           </thead>
           <tbody>
             {cursos
-              .filter(c => c.nombre.toLowerCase().includes(filtro))
+              .filter((c) => c.nombre.toLowerCase().includes(filtro))
               .map((c) => (
                 <tr key={c.id}>
                   <td>{c.nombre}</td>
@@ -207,24 +228,29 @@ function Cursos() {
                   <td>{c.nombreProfesor}</td>
                   {rol === "ADMIN" && (
                     <td>
-                      <button className="editar-btn" onClick={() =>
-                        setNuevo({
-                          id: c.id,
-                          nombre: c.nombre,
-                          descripcion: c.descripcion,
-                          profesorId: ""
-                        })
-                      }>
+                      <button
+                        className="editar-btn"
+                        onClick={() =>
+                          setNuevo({
+                            id: c.id,
+                            nombre: c.nombre,
+                            descripcion: c.descripcion,
+                            profesorId: ""
+                          })
+                        }
+                      >
                         Editar
                       </button>
-                      <button className="eliminar-btn" onClick={() => eliminarCurso(c.id)}>
+                      <button
+                        className="eliminar-btn"
+                        onClick={() => eliminarCurso(c.id)}
+                      >
                         Eliminar
                       </button>
                     </td>
                   )}
                 </tr>
-              ))
-            }
+              ))}
           </tbody>
         </table>
       </div>

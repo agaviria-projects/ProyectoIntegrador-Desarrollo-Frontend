@@ -125,7 +125,7 @@ function GestionUsuarios() {
       </div>
 
       <div className="tabla-contenedor">
-        <table>
+        <table className="tabla-estudiantes">
           <thead>
             <tr>
               <th>ID</th>  
