@@ -1,12 +1,65 @@
-# React + Vite
+# 🎓 EducationSystem – Sistema de Gestión Académica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es un sistema académico completo para la gestión de estudiantes, profesores, cursos, matrículas y notas. Desarrollado como proyecto integrador del programa **Asistente en Desarrollo de Software (CESDE)**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- ✅ **Frontend**: React.js + Vite
+- ✅ **Backend**: Java Spring Boot
+- ✅ **Base de datos**: MySQL
+- ✅ **Análisis**: Python + Pandas + Chart.js
+- ✅ **Herramientas**: Postman, Railway, Vercel, GitHub
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🧩 Módulos implementados
+
+- 🔐 Autenticación con roles (ADMIN, PROFESOR, ESTUDIANTE)
+- 👥 Gestión de Usuarios
+- 👨‍🏫 Gestión de Profesores
+- 🎓 Gestión de Estudiantes
+- 📚 Gestión de Cursos
+- 📝 Gestión de Matrículas
+- 🧮 Gestión de Notas (según el rol)
+- 📊 Módulo de Analítica de Datos con gráficas
+- 🌐 Despliegue en la nube
+
+---
+
+## 💻 Cómo ejecutar el proyecto localmente
+https://github.com/agaviria-projects/education-system-backend.git
+
+https://github.com/agaviria-projects/education-system-frontend.git
+
+2. Configura la base de datos
+
+Crear una base de datos MySQL llamada educationSystem.
+
+Importar el archivo .sql con la estructura y datos iniciales.
+
+3. Ejecuta el backend
+
+Abrir el proyecto backend en tu IDE (IntelliJ recomendado).
+
+Verificar que el archivo application.properties tenga las credenciales correctas de tu base de datos local o en la nube.
+
+Ejecutar la clase EducationSystemApplication.java.
+
+La API estará disponible en:
+
+http://localhost:8080/api
+
+4. Ejecutar el frontend
+
+Abre la carpeta education-system-frontend en VS Code.
+
+Ejecutar los siguientes comandos:
+
+npm install
+npm run dev
+
+El frontend estará disponible en:
+
+http://localhost:5173
