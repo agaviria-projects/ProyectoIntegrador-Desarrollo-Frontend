@@ -37,15 +37,13 @@ https://github.com/agaviria-projects/education-system-frontend.git
 
 Crear una base de datos MySQL llamada educationSystem.
 
-Importar el archivo .sql con la estructura y datos iniciales.
-
-3. Ejecuta el backend
+1. Ejecuta el backend
 
 Abrir el proyecto backend en tu IDE (IntelliJ recomendado).
 
-Verificar que el archivo application.properties tenga las credenciales correctas de tu base de datos local o en la nube.
+Verificar que el archivo application.properties tenga las credenciales correctas de la base de datos local o en la nube.
 
-Ejecutar la clase EducationSystemApplication.java.
+Ejecutar la clase GestorAcademicoApplication.java(clase principal del backend)
 
 La API estará disponible en:
 
