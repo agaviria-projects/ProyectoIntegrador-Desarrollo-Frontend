@@ -61,3 +61,14 @@ npm run dev
 El frontend estará disponible en:
 
 http://localhost:5173
+
+💻 Cómo ejecutar el proyecto localmente
+
+Clonar el repositorio (rama dev):
+
+git clone -b dev https://github.com/agaviria-projects/education-system-frontend.git
+
+Clonar también el backend:
+
+git clone -b dev https://github.com/agaviria-projects/education-system-backend.git
+
