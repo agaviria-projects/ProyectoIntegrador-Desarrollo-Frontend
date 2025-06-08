@@ -1,6 +1,6 @@
 # 🎓 EducationSystem – Sistema de Gestión Académica
 
-Este proyecto es un sistema académico completo para la gestión de estudiantes, profesores, cursos, matrículas y notas. Desarrollado como proyecto integrador del programa **Asistente en Desarrollo de Software (CESDE)**.
+Este proyecto es un sistema académico para la gestión de estudiantes, profesores, cursos, matrículas y notas. Desarrollado como proyecto integrador del programa **Asistente en Desarrollo de Software (CESDE)**.
 
 ---
 
@@ -33,13 +33,13 @@ https://github.com/agaviria-projects/education-system-backend.git
 
 https://github.com/agaviria-projects/education-system-frontend.git
 
-2. Configura la base de datos
+2. Configurar la base de datos
 
 Crear una base de datos MySQL llamada educationSystem.
 
-1. Ejecuta el backend
+1. Ejecutar el backend
 
-Abrir el proyecto backend en tu IDE (IntelliJ recomendado).
+Abrir el proyecto backend en el IDE (IntelliJ).
 
 Verificar que el archivo application.properties tenga las credenciales correctas de la base de datos local o en la nube.
 
@@ -51,11 +51,12 @@ http://localhost:8080/api
 
 4. Ejecutar el frontend
 
-Abre la carpeta education-system-frontend en VS Code.
+Abrir la carpeta education-system-frontend en VS Code.
 
 Ejecutar los siguientes comandos:
 
 npm install
+npm install react-router-dom
 npm run dev
 
 El frontend estará disponible en:
@@ -71,4 +72,7 @@ git clone -b dev https://github.com/agaviria-projects/education-system-frontend.
 Clonar también el backend:
 
 git clone -b dev https://github.com/agaviria-projects/education-system-backend.git
+
+
+Héctor Alejandro Gaviria Marin.
 
